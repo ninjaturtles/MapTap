@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import ca.wlu.johnny.akanksha.maptap.database.UserBaseHelper;
 import ca.wlu.johnny.akanksha.maptap.database.UserCursorWrapper;
@@ -52,11 +51,11 @@ public class DbUtils {
         }
     }
 
-    public int deleteCard(UUID id) {
+    public int deleteCard(String email) {
         int status = -1;
 
         try {
-            status = mDatabase.delete(UserTable.NAME, UserTable.Cols.UUID + " = ?", new String[] {id.toString()});
+            status = mDatabase.delete(UserTable.NAME, UserTable.Cols.EMAIL + " = ?", new String[] {email});
         } catch (Exception e) {
             e.printStackTrace();
         }
