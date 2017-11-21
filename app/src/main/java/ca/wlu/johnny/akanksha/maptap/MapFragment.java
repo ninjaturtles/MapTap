@@ -33,22 +33,20 @@ public class MapFragment extends Fragment {
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View view = inflater.inflate(R.layout.fragment_news_list,container,false);
-
-        if (isNetworkAvailable()) {
-            Log.v("HTTP", "Network available");
-
-        } else {
-            Toast.makeText(getActivity(), "Network not available", Toast.LENGTH_SHORT).show();
-            Log.v("HTTP", "Network NOT available");
-        }
-
-        return view;
-    }
-
-
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+//        View view = inflater.inflate(R.layout.fragment_news_list,container,false);
+//
+//        if (isNetworkAvailable()) {
+//            Log.v("HTTP", "Network available");
+//
+//        } else {
+//            Toast.makeText(getActivity(), "Network not available", Toast.LENGTH_SHORT).show();
+//            Log.v("HTTP", "Network NOT available");
+//        }
+//
+//        return view;
+//    }
 
 
     public boolean isNetworkAvailable() {
