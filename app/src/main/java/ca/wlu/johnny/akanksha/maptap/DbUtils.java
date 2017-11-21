@@ -39,8 +39,8 @@ public class DbUtils {
         mDatabase.insert(UserTable.NAME, null, userValues);
     }
 
-    public User getUser(UUID id) {
-        UserCursorWrapper cursor = queryUsers(UserTable.Cols.UUID + " = ?", new String[]{id.toString()});
+    public User getUser(String email) {
+        UserCursorWrapper cursor = queryUsers(UserTable.Cols.EMAIL + " = ?", new String[]{email});
         try {
             if (cursor.getCount() == 0) {
                 return null;
