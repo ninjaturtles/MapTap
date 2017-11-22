@@ -3,5 +3,7 @@
     <string name="sign_in_button">SIGN IN</string>
     <string name="sign_up_button">SIGN UP</string>
     <string name="action_settings">Settings</string>
-    <string name="place_picker_api">AIzaSyCE-ry02VFGXMcDj9cqKYEqoA6-DqdHItQ</string>
+    <string name="directions_button">Directions</string>
+    <string name="google_place_picker_api">AIzaSyCE-ry02VFGXMcDj9cqKYEqoA6-DqdHItQ</string>
+    <string name="google_directions_api">AIzaSyCL2bzIc1RakBC6t6xqM-OSpQ7tiLVXUZw</string>
 </resources>
