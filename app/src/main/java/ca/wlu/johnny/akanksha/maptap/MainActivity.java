@@ -150,7 +150,6 @@ public class MainActivity extends AppCompatActivity
 
                 mSelectedPlace = new SelectedPlace(name, address, phoneNumber, url, latLng, type, price, rating);
 
-
                 FragmentManager fm = getSupportFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
 
@@ -178,9 +177,9 @@ public class MainActivity extends AppCompatActivity
                 try {
                     if (myPlaceType == field.getInt(null)) {
                         Log.i("Testing", "onCreate: " + field.getName());
-                        String[] name= field.getName().split("_");
-                        String types="";
-                        for (int i = 1; i < name.length; i++){
+                        String[] name = field.getName().split("_");
+                        String types = "";
+                        for (int i = 1; i < name.length; i++) {
                             types = types + name[i] + " ";
                         }
                         String s1 = types.substring(0, 1).toUpperCase();
@@ -191,7 +190,6 @@ public class MainActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
             }
-
         }
         return "error";
 
