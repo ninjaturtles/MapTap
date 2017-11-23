@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity
     private static int SIGN_IN_REQUEST = 0;
     protected static int WEBVIEW_REQUEST = 2;
     private static final String BUNDLE_STATE_CODE = "ca.wlu.johnny.akanksha.maptap.MainActivity";
-    private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
+    protected static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
 
     private SelectedPlace mSelectedPlace;
 

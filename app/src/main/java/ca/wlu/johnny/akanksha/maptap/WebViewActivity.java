@@ -3,8 +3,11 @@ package ca.wlu.johnny.akanksha.maptap;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -17,7 +20,8 @@ import android.widget.TextView;
  * Created by johnny on 2017-11-17.
  */
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends AppCompatActivity
+        implements FragmentManager.OnBackStackChangedListener{
 
     private static final String EXTRA_PLACE= "ca.wlu.johnny.akanksha.maptap.place_url";
 
@@ -45,6 +49,44 @@ public class WebViewActivity extends AppCompatActivity {
 
         setupWebView();
 
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        shouldDisplayHomeUp();
+    }
+
+    public void shouldDisplayHomeUp(){
+        //Enable Up button only  if there are entries in the back stack
+        boolean canback = getSupportFragmentManager().getBackStackEntryCount()>0;
+        System.out.println(canback);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(canback);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_settings:
+                //TODO: settings menu here
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    } // onOptionsItemSelected
+
+    @Override
+    public void onBackPressed() {
+        int theBackStackCount =
+                getSupportFragmentManager().getBackStackEntryCount();
+        System.out.println(theBackStackCount);
+        if (theBackStackCount > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     public void setupWebView() {
