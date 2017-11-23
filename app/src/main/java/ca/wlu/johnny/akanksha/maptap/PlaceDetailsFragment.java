@@ -32,7 +32,6 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mDirectionsTextView;
     private TextView mCallTextView;
     private TextView mPlaceWebsiteIcon;
-    private TextView mPlaceWebsiteIcon;
 
     public static PlaceDetailsFragment newInstance(SelectedPlace place){
         Bundle args = new Bundle();
@@ -77,14 +76,13 @@ public class PlaceDetailsFragment extends Fragment {
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapIntent);
-
             }
         });
     }
 
     //opens call
     private void onCallClick() {
-        mDirectionsTextView.setOnClickListener(new View.OnClickListener() {
+        mCallTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -101,7 +99,7 @@ public class PlaceDetailsFragment extends Fragment {
         mPlaceImageView = v.findViewById(R.id.place_image);
         mPlaceWebsiteIcon = v.findViewById(R.id.website_icon);
         mDirectionsTextView = v.findViewById(R.id.directions_icon);
-        mCallTextView = v.findViewById(R.id.directions_icon);
+        mCallTextView = v.findViewById(R.id.call_icon);
 
     } // setViews
 
