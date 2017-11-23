@@ -1,7 +1,6 @@
 package ca.wlu.johnny.akanksha.maptap;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +16,14 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.lang.reflect.Field;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+    implements FragmentManager.OnBackStackChangedListener {
 
     // Constants
     private int PLACE_PICKER_REQUEST = 1;
     private int SIGN_IN_REQUEST = 0;
     private static final String BUNDLE_STATE_CODE = "ca.wlu.johnny.akanksha.maptap.MainActivity";
+    private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
 
     private SelectedPlace mSelectedPlace;
 
@@ -31,31 +32,51 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Listen for changes in the back stack
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
+        //Handle when activity is recreated like on orientation Change
+        shouldDisplayHomeUp();
+
         // retrieve state if not null
         if (savedInstanceState != null) {
-//            Bundle bundle = savedInstanceState.getBundle(BUNDLE_STATE_CODE);
             onRestoreInstanceState(savedInstanceState);
 
         } else {
-            //        Intent intent = new Intent(this, SignInActivity.class);
-            //        startActivityForResult(intent, SIGN_IN_REQUEST);
-
+            // leave commented out, for testing only
+//            Intent intent = new Intent(this, SignInActivity.class);
+//            startActivityForResult(intent, SIGN_IN_REQUEST);
 
             // for testing only
-            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-            try {
-                Intent placePickerIntent = builder.build(getApplicationContext());
-                startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
-
-            } catch (GooglePlayServicesRepairableException e) {
-                e.printStackTrace();
-
-            } catch (GooglePlayServicesNotAvailableException e) {
-                e.printStackTrace();
-            }
+            startPlacePickerAPI();
         }
     } // onCreate
+
+    private void startPlacePickerAPI() {
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+        try {
+            Intent placePickerIntent = builder.build(getApplicationContext());
+            startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        shouldDisplayHomeUp();
+    }
+
+    public void shouldDisplayHomeUp(){
+        //Enable Up button only  if there are entries in the back stack
+        boolean canback = getSupportFragmentManager().getBackStackEntryCount()>0;
+        System.out.println(canback);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(canback);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedStateInstance) {
@@ -77,31 +98,38 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_settings:
+                //TODO: settings menu here
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     } // onOptionsItemSelected
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == SIGN_IN_REQUEST) {
-
-//            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-//
-//            try {
-//                Intent placePickerIntent = builder.build(getApplicationContext());
-//                startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
-//
-//            } catch (GooglePlayServicesRepairableException e) {
-//                e.printStackTrace();
-//
-//            } catch (GooglePlayServicesNotAvailableException e ) {
-//                e.printStackTrace();
-//            }
+    @Override
+    public void onBackPressed() {
+        int theBackStackCount =
+                getSupportFragmentManager().getBackStackEntryCount();
+        System.out.println(theBackStackCount);
+        if (theBackStackCount > 0) {
+            getSupportFragmentManager().popBackStack();
+            startPlacePickerAPI();
+        } else {
+            super.onBackPressed();
         }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//          leave commented out, for testing only
+//        if (requestCode == SIGN_IN_REQUEST) {
+//
+//        startPlacePickerAPI();
+//
+//        }
 
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
@@ -109,13 +137,16 @@ public class MainActivity extends AppCompatActivity {
 
                 // TODO: handle onAddressSelected()
 //                String address = String.format("Place is: %s ", place.getAddress());
-//                System.out.println("---------------- " + address + " ---------------------");
+//                System.out.println("-------------------------------------");
                 System.out.println(place.getName());
                 System.out.println(place.getPhoneNumber());
                 System.out.println(place.getWebsiteUri());
                 System.out.println(place.getLatLng());
                 System.out.println(getPlaceType(place.getPlaceTypes().get(0)));
                 System.out.println(place.getPlaceTypes());
+                System.out.println(place.getPriceLevel());
+                System.out.println(place.getRating());
+
 
                 String name = place.getName().toString();
                 String address = place.getAddress().toString();
@@ -137,8 +168,11 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
 
                 if (fragment == null) {
+
                     fragment = PlaceDetailsFragment.newInstance(mSelectedPlace);
-                    fm.beginTransaction().add(R.id.fragment_container, fragment).commitAllowingStateLoss();
+                    fm.beginTransaction().add(R.id.fragment_container, fragment)
+                            .addToBackStack(FRAGMENT_PLACE_DETAILS)
+                            .commitAllowingStateLoss();
                 }
             }
         }

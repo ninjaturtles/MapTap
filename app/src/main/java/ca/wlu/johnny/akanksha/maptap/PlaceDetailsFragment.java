@@ -3,7 +3,6 @@ package ca.wlu.johnny.akanksha.maptap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +23,6 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mPlacePriceTextView;
     private ImageView mPlaceImageView;
 
-
     public static PlaceDetailsFragment newInstance(SelectedPlace place){
         Bundle args = new Bundle();
         args.putParcelable(ARG_PLACE, place);
@@ -37,6 +35,7 @@ public class PlaceDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         getActionBar().setTitle("Place Details");
 
         mPlace = getArguments().getParcelable(ARG_PLACE);
@@ -71,12 +70,8 @@ public class PlaceDetailsFragment extends Fragment {
         String type = mPlace.getType();
         mPlaceTypeTextView.setText(type);
 
-
         String price = mPlace.getPrice();
         mPlacePriceTextView.setText(price);
-
-
-
 
     } // updateUI
 
