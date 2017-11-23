@@ -142,11 +142,12 @@ public class MainActivity extends AppCompatActivity
 
                 String latLng = place.getLatLng().toString();
                 String type = getPlaceType(place.getPlaceTypes().get(0));
+                float rating = place.getRating();
 
                 int price=place.getPriceLevel();
 
 
-                mSelectedPlace = new SelectedPlace(name, address, phoneNumber, url, latLng, type, price);
+                mSelectedPlace = new SelectedPlace(name, address, phoneNumber, url, latLng, type, price, rating);
 
                 FragmentManager fm = getSupportFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);

@@ -16,6 +16,7 @@ public class SelectedPlace implements Parcelable {
     private String mLatLng;
     private String mType;
     private int mPrice;
+    private float mRating;
 
     @Override
     public int describeContents() {
@@ -23,7 +24,9 @@ public class SelectedPlace implements Parcelable {
         return 0;
     }
 
-    public SelectedPlace(String myName, String myAddress, String myPhoneNumber, String myUrl, String myLatLng, String myType, int myPrice){
+    public SelectedPlace(String myName, String myAddress, String myPhoneNumber,
+                         String myUrl, String myLatLng, String myType,
+                         int myPrice, float myRating){
         mName = myName;
         mAddress = myAddress;
         mPhoneNumber = myPhoneNumber;
@@ -31,6 +34,7 @@ public class SelectedPlace implements Parcelable {
         mLatLng = myLatLng;
         mType = myType;
         mPrice = myPrice;
+        mRating = myRating;
     }
 
     public SelectedPlace(Parcel in){
@@ -41,6 +45,7 @@ public class SelectedPlace implements Parcelable {
         this.mLatLng = in.readString();
         this.mType = in.readString();
         this.mPrice = in.readInt();
+        this.mRating = in.readFloat();
     }
 
     @Override
@@ -52,6 +57,7 @@ public class SelectedPlace implements Parcelable {
         dest.writeString(mLatLng);
         dest.writeString(mType);
         dest.writeInt(mPrice);
+        dest.writeFloat(mRating);
     }
 
     public static final Parcelable.Creator<SelectedPlace> CREATOR = new Parcelable.Creator<SelectedPlace>() {
@@ -99,4 +105,9 @@ public class SelectedPlace implements Parcelable {
     public int getPrice() {
         return mPrice;
     }
+
+    public float getRating() {
+        return mRating;
+    }
+
 }
