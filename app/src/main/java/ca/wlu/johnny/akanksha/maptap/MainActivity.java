@@ -18,8 +18,9 @@ public class MainActivity extends AppCompatActivity
     implements FragmentManager.OnBackStackChangedListener {
 
     // Constants
-    private int PLACE_PICKER_REQUEST = 1;
-    private int SIGN_IN_REQUEST = 0;
+    private static int PLACE_PICKER_REQUEST = 1;
+    private static int SIGN_IN_REQUEST = 0;
+    protected static int WEBVIEW_REQUEST = 2;
     private static final String BUNDLE_STATE_CODE = "ca.wlu.johnny.akanksha.maptap.MainActivity";
     private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
 
@@ -40,11 +41,9 @@ public class MainActivity extends AppCompatActivity
             onRestoreInstanceState(savedInstanceState);
 
         } else {
-            // leave commented out, for testing only
-//            Intent intent = new Intent(this, SignInActivity.class);
-//            startActivityForResult(intent, SIGN_IN_REQUEST);
-
-            // for testing only
+            //TODO: leave commented out, for testing only
+//          Intent intent = new Intent(this, SignInActivity.class);
+//          startActivityForResult(intent, SIGN_IN_REQUEST);
             startPlacePickerAPI();
         }
     } // onCreate
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSaveInstanceState(Bundle savedStateInstance) {
         super.onSaveInstanceState(savedStateInstance);
-//        savedStateInstance.putBundle(BUNDLE_STATE_CODE, savedStateInstance);
     } // onSaveInstanceState
 
     @Override
@@ -122,34 +120,20 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//          leave commented out, for testing only
-//        if (requestCode == SIGN_IN_REQUEST) {
-//
-//        startPlacePickerAPI();
-//
-//        }
 
-        if (requestCode == PLACE_PICKER_REQUEST) {
+        if (requestCode == SIGN_IN_REQUEST) {
+            startPlacePickerAPI();
+        }
+
+        else if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(data, this);
-
-                // TODO: handle onAddressSelected()
-//                String address = String.format("Place is: %s ", place.getAddress());
-//                System.out.println("-------------------------------------");
-                System.out.println(place.getName()); //name
-                System.out.println(place.getPhoneNumber()); //phone
-                System.out.println(place.getWebsiteUri()); //website
-                System.out.println(place.getLatLng()); //Latitude + longitude
-                System.out.println(getPlaceType(place.getPlaceTypes().get(0)));
-                System.out.println(place.getPlaceTypes()); // place type
-                System.out.println(place.getPriceLevel()); //Price level
-                System.out.println(place.getRating()); //Rating
-
 
                 String name = place.getName().toString();
                 String address = place.getAddress().toString();
                 String phoneNumber = place.getPhoneNumber().toString();
                 String url;
+
                 if (place.getWebsiteUri() != null){
                     url = place.getWebsiteUri().toString();
                 } else {
