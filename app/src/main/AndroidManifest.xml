@@ -32,6 +32,12 @@
         <activity android:name=".SignInActivity" android:theme="@style/AppTheme" />
         <activity android:name=".SignUpActivity" android:theme="@style/AppTheme" />
 
+        <activity
+            android:name="ca.wlu.johnny.akanksha.maptap.WebViewActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:parentActivityName="ca.wlu.johnny.akanksha.maptap.MainActivity">
+        </activity>
+
     </application>
 
 </manifest>
