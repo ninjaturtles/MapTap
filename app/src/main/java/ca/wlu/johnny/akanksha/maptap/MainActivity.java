@@ -1,5 +1,6 @@
 package ca.wlu.johnny.akanksha.maptap;
 
+
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity
         } catch (GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -110,7 +114,7 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         int theBackStackCount =
                 getSupportFragmentManager().getBackStackEntryCount();
-        System.out.println(theBackStackCount);
+
         if (theBackStackCount > 0) {
             getSupportFragmentManager().popBackStack();
             startPlacePickerAPI();
@@ -129,25 +133,23 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(data, this);
 
-                String name = place.getName().toString();
-                String address = place.getAddress().toString();
-                String phoneNumber = place.getPhoneNumber().toString();
-                String url;
-
-                if (place.getWebsiteUri() != null){
-                    url = place.getWebsiteUri().toString();
-                } else {
-                    url = null;
+                if(place.getName().equals("") && place.getAddress().equals("")) {
+                    Toast.makeText(this, "No place chosen", Toast.LENGTH_SHORT).show();
+                    startPlacePickerAPI();
+                    return;
                 }
 
+                String name = place.getName().toString();
+                String address = place.getAddress().toString();
+                String phoneNumber = (place.getPhoneNumber() == null) ? "N/A" : place.getPhoneNumber().toString();
+                String url = (place.getWebsiteUri() == null) ? "N/A" : place.getWebsiteUri().toString();
                 String latLng = place.getLatLng().toString();
                 String type = getPlaceType(place.getPlaceTypes().get(0));
                 float rating = place.getRating();
-
                 int price=place.getPriceLevel();
 
-
                 mSelectedPlace = new SelectedPlace(name, address, phoneNumber, url, latLng, type, price, rating);
+
 
                 FragmentManager fm = getSupportFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
