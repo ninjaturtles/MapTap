@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
@@ -32,6 +33,7 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mDirectionsTextView;
     private TextView mCallTextView;
     private TextView mPlaceWebsiteIcon;
+    private RatingBar mRating;
 
     public static PlaceDetailsFragment newInstance(SelectedPlace place){
         Bundle args = new Bundle();
@@ -72,7 +74,7 @@ public class PlaceDetailsFragment extends Fragment {
         mDirectionsTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri gmmIntentUri = Uri.parse("google.navigation:q=Taronga+Zoo,+Sydney+Australia");
+                Uri gmmIntentUri = Uri.parse("google.navigation:q="+mPlace.getAddress()+"");
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 startActivity(mapIntent);
@@ -100,6 +102,7 @@ public class PlaceDetailsFragment extends Fragment {
         mPlaceWebsiteIcon = v.findViewById(R.id.website_icon);
         mDirectionsTextView = v.findViewById(R.id.directions_icon);
         mCallTextView = v.findViewById(R.id.call_icon);
+        mRating = v.findViewById(R.id.rating);
 
     } // setViews
 
@@ -121,6 +124,10 @@ public class PlaceDetailsFragment extends Fragment {
         } else {
             mPlacePriceTextView.setText("");
         }
+
+        float ratings = mPlace.getRating();
+        mRating.setRating(ratings);
+
 
         setUpWebsiteIcon();
 

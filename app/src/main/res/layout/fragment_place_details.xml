@@ -22,10 +22,10 @@
         <TextView
             android:id="@+id/place_type_text_view"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="54dp"
             android:padding="12dp"
             android:textSize="15dp"
-            android:layout_weight="0.3"/>
+            android:layout_weight="0.30"/>
 
         <TextView
             android:id="@+id/place_price_text_view"
@@ -39,6 +39,7 @@
 
     <ImageView
         android:id="@+id/place_image"
+
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
 
@@ -60,7 +61,7 @@
         <TextView
             android:id="@+id/website_icon"
             android:layout_width="0dp"
-            android:text="website"
+            android:text="Website"
             android:layout_height="50dp"
             android:padding="10dp"
             android:layout_weight="0.25"/>
@@ -68,6 +69,7 @@
         <TextView
             android:id="@+id/uber_icon"
             android:layout_width="0dp"
+            android:text="Uber"
             android:layout_height="50dp"
             android:padding="10dp"
             android:layout_weight="0.25"/>
@@ -81,5 +83,14 @@
             android:layout_weight="0.25"/>
 
     </LinearLayout>
+
+    <RatingBar
+        android:id="@+id/rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="?android:attr/ratingBarStyleSmall"
+        android:numStars="5"
+        android:stepSize="0.1"
+        android:isIndicator="true" />
 
 </LinearLayout>
