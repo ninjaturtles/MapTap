@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity
 
                 String latLng = place.getLatLng().toString();
                 String type = getPlaceType(place.getPlaceTypes().get(0));
-                String price = place.getPlaceTypes().toString();
+                int price = place.getPriceLevel();
 
                 mSelectedPlace = new SelectedPlace(name, address, phoneNumber, url, latLng, type, price);
 
