@@ -1,5 +1,7 @@
 package ca.wlu.johnny.akanksha.maptap;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -22,6 +24,8 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mPlaceTypeTextView;
     private TextView mPlacePriceTextView;
     private ImageView mPlaceImageView;
+    private TextView mDirectionsTextView;
+    private TextView mCallTextView;
 
     public static PlaceDetailsFragment newInstance(SelectedPlace place){
         Bundle args = new Bundle();
@@ -50,20 +54,50 @@ public class PlaceDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_place_details, container, false);
 
         setViews(view);
-
+        onDirectionsClick();
+        onCallClick();
         updateUI();
         return view;
     } // onCreateView
+
+
+    //opens google nav on click
+    private void onDirectionsClick() {
+        mDirectionsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri gmmIntentUri = Uri.parse("google.navigation:q=Taronga+Zoo,+Sydney+Australia");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+
+            }
+        });
+    }
+
+    //opens call
+    private void onCallClick() {
+        mDirectionsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:"+mPlace.getPhoneNumber()));
+                startActivity(intent);
+            }
+        });
+    }
 
     private void setViews(View v) {
         mPlaceNameTextView = v.findViewById(R.id.place_name);
         mPlaceTypeTextView = v.findViewById(R.id.place_type_text_view);
         mPlacePriceTextView = v.findViewById(R.id.place_price_text_view);
         mPlaceImageView = v.findViewById(R.id.place_image);
+        mDirectionsTextView = v.findViewById(R.id.directions_icon);
+        mCallTextView = v.findViewById(R.id.directions_icon);
 
     } // setViews
 
-    private void updateUI(){
+    private void updateUI() {
         String name = mPlace.getName();
         mPlaceNameTextView.setText(name);
 
@@ -72,14 +106,16 @@ public class PlaceDetailsFragment extends Fragment {
 
         int price = mPlace.getPrice();
 
-        if (price == -1) {
+        if (price == 0 || price == 1) {
+            mPlacePriceTextView.setText("$");
+        } else if (price == 2 || price == 3) {
+            mPlacePriceTextView.setText("$$");
+        } else if (price == 4) {
+            mPlacePriceTextView.setText("$$$");
+        } else {
             mPlacePriceTextView.setText("");
-        }else{
-            mPlacePriceTextView.setText(""+price);
-
         }
-
-
+        
     } // updateUI
 
 } // PlaceDetailsFragment

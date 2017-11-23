@@ -43,44 +43,42 @@
         android:layout_height="200dp"/>
 
 
-    <!--<LinearLayout-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:weightSum="1">-->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:weightSum="1">
 
-        <!--<TextView-->
-            <!--android:id="@+id/call_icon"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_gravity="center_vertical|right"-->
-            <!--android:drawableLeft="@drawable/call"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:padding="10dp"-->
-            <!--android:layout_weight="0.25"/>-->
+        <TextView
+            android:id="@+id/call_icon"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:text="Call"
+            android:layout_weight="0.25"/>
 
-        <!--<TextView-->
-            <!--android:id="@+id/website_icon"-->
-            <!--android:layout_width="0dp"-->
+        <TextView
+            android:id="@+id/website_icon"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:layout_weight="0.25"/>
 
-            <!--android:layout_height="50dp"-->
-            <!--android:padding="10dp"-->
-            <!--android:layout_weight="0.25"/>-->
+        <TextView
+            android:id="@+id/uber_icon"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:layout_weight="0.25"/>
 
-        <!--<TextView-->
-            <!--android:id="@+id/uber_icon"-->
-            <!--android:layout_width="0dp"-->
+        <TextView
+            android:id="@+id/directions_icon"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:text="Directions"
+            android:padding="10dp"
+            android:layout_weight="0.25"/>
 
-            <!--android:layout_height="50dp"-->
-            <!--android:padding="10dp"-->
-            <!--android:layout_weight="0.25"/>-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/directions_icon"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:padding="10dp"-->
-            <!--android:layout_weight="0.25"/>-->
-
-    <!--</LinearLayout>-->
+    </LinearLayout>
 
 </LinearLayout>
