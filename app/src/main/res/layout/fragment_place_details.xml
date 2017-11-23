@@ -4,8 +4,87 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/place_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/place_name"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:text="Burger King"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:layout_weight="0.5"/>
+
+        <TextView
+            android:id="@+id/place_type_text_view"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+
+            android:padding="12dp"
+            android:text="Fast food"
+            android:textSize="18dp"
+            android:layout_weight="0.3"/>
+
+        <TextView
+            android:id="@+id/place_price_text_view"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:padding="12dp"
+            android:text="$"
+            android:textSize="18dp"
+            android:layout_weight="0.2"/>
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/place_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+
+
+    <!--<LinearLayout-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:weightSum="1">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/call_icon"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_gravity="center_vertical|right"-->
+            <!--android:drawableLeft="@drawable/call"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_weight="0.25"/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/website_icon"-->
+            <!--android:layout_width="0dp"-->
+
+            <!--android:layout_height="50dp"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_weight="0.25"/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/uber_icon"-->
+            <!--android:layout_width="0dp"-->
+
+            <!--android:layout_height="50dp"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_weight="0.25"/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/directions_icon"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:padding="10dp"-->
+            <!--android:layout_weight="0.25"/>-->
+
+    <!--</LinearLayout>-->
+
 </LinearLayout>
