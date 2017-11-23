@@ -198,7 +198,9 @@ public class MainActivity extends AppCompatActivity
                         for (int i = 1; i < name.length; i++){
                             types = types + name[i] + " ";
                         }
-                        return types;
+                        String s1 = types.substring(0, 1).toUpperCase();
+                        String nameCapitalized = s1 + types.substring(1).toLowerCase();
+                        return nameCapitalized;
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
