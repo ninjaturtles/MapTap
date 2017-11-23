@@ -9,15 +9,13 @@ import android.os.Parcelable;
 
 public class SelectedPlace implements Parcelable {
 
-    String mName;
-    String mAddress;
-    String mPhoneNumber;
-    String mUrl;
-    String mLatLng;
-    String mType;
-    int mPrice;
-
-
+    private String mName;
+    private String mAddress;
+    private String mPhoneNumber;
+    private String mUrl;
+    private String mLatLng;
+    private String mType;
+    private int mPrice;
 
     @Override
     public int describeContents() {

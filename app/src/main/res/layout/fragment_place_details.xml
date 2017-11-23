@@ -8,24 +8,23 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:weightSum="1">
+        android:weightSum="0.9">
 
         <TextView
             android:id="@+id/place_name"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:padding="10dp"
-            android:textSize="20dp"
+            android:padding="12dp"
+            android:textSize="18dp"
             android:textStyle="bold"
-            android:layout_weight="0.5"/>
+            android:layout_weight="0.4"/>
 
         <TextView
             android:id="@+id/place_type_text_view"
             android:layout_width="0dp"
             android:layout_height="50dp"
-
             android:padding="12dp"
-            android:textSize="18dp"
+            android:textSize="15dp"
             android:layout_weight="0.3"/>
 
         <TextView
@@ -33,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:padding="12dp"
-            android:textSize="18dp"
+            android:textSize="15dp"
             android:layout_weight="0.2"/>
     </LinearLayout>
 

@@ -70,8 +70,15 @@ public class PlaceDetailsFragment extends Fragment {
         String type = mPlace.getType();
         mPlaceTypeTextView.setText(type);
 
-        String price = mPlace.getPrice();
-        mPlacePriceTextView.setText(price);
+        int price = mPlace.getPrice();
+
+        if (price == -1) {
+            mPlacePriceTextView.setText("");
+        }else{
+            mPlacePriceTextView.setText(""+price);
+
+        }
+
 
     } // updateUI
 

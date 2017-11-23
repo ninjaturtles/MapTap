@@ -138,14 +138,14 @@ public class MainActivity extends AppCompatActivity
                 // TODO: handle onAddressSelected()
 //                String address = String.format("Place is: %s ", place.getAddress());
 //                System.out.println("-------------------------------------");
-                System.out.println(place.getName());
-                System.out.println(place.getPhoneNumber());
-                System.out.println(place.getWebsiteUri());
-                System.out.println(place.getLatLng());
+                System.out.println(place.getName()); //name
+                System.out.println(place.getPhoneNumber()); //phone
+                System.out.println(place.getWebsiteUri()); //website
+                System.out.println(place.getLatLng()); //Latitude + longitude
                 System.out.println(getPlaceType(place.getPlaceTypes().get(0)));
-                System.out.println(place.getPlaceTypes());
-                System.out.println(place.getPriceLevel());
-                System.out.println(place.getRating());
+                System.out.println(place.getPlaceTypes()); // place type
+                System.out.println(place.getPriceLevel()); //Price level
+                System.out.println(place.getRating()); //Rating
 
 
                 String name = place.getName().toString();
@@ -160,7 +160,9 @@ public class MainActivity extends AppCompatActivity
 
                 String latLng = place.getLatLng().toString();
                 String type = getPlaceType(place.getPlaceTypes().get(0));
-                int price = place.getPriceLevel();
+
+                int price=place.getPriceLevel();
+
 
                 mSelectedPlace = new SelectedPlace(name, address, phoneNumber, url, latLng, type, price);
 
@@ -191,12 +193,18 @@ public class MainActivity extends AppCompatActivity
                 try {
                     if (myPlaceType == field.getInt(null)) {
                         Log.i("Testing", "onCreate: " + field.getName());
-                        return field.getName();
+                        String[] name= field.getName().split("_");
+                        String types="";
+                        for (int i = 1; i < name.length; i++){
+                            types = types + name[i] + " ";
+                        }
+                        return types;
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
+
         }
         return "error";
 
