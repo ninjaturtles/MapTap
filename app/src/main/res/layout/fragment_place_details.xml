@@ -45,6 +45,7 @@
 
 
     <LinearLayout
+        xmlns:uber="http://schemas.android.com/apk/res-auto"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -66,12 +67,12 @@
             android:padding="10dp"
             android:layout_weight="0.25"/>
 
-        <TextView
+        <com.uber.sdk.android.rides.RideRequestButton
             android:id="@+id/uber_icon"
             android:layout_width="0dp"
-            android:text="Uber"
             android:layout_height="50dp"
             android:padding="10dp"
+            uber:ub__style="black"
             android:layout_weight="0.25"/>
 
         <TextView

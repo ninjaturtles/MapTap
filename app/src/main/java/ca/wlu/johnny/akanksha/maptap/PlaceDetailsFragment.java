@@ -1,6 +1,7 @@
 package ca.wlu.johnny.akanksha.maptap;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +19,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import com.uber.sdk.android.core.UberButton;
+import com.uber.sdk.android.rides.RideRequestButton;
 
 /**
  * Created by johnny on 2017-11-22.
@@ -34,6 +39,7 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mCallTextView;
     private TextView mPlaceWebsiteIcon;
     private RatingBar mRating;
+    private RideRequestButton mUberRidesButton;
 
     public static PlaceDetailsFragment newInstance(SelectedPlace place){
         Bundle args = new Bundle();
@@ -59,14 +65,25 @@ public class PlaceDetailsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        LinearLayout layout = (LinearLayout) findViewById(R.layout.fragment_place_details);
+
         View view = inflater.inflate(R.layout.fragment_place_details, container, false);
 
         setViews(view);
         onDirectionsClick();
         onCallClick();
+//        uberButton(view);
         updateUI();
         return view;
     } // onCreateView
+
+    private void uberButton(View v) {
+        // get the context by invoking ``getApplicationContext()``, ``getContext()``, ``getBaseContext()`` or ``this`` when in the activity class
+        RideRequestButton requestButton = new RideRequestButton(getContext());
+        // get your layout, for instance:
+//        RelativeLayout layout = (RelativeLayout) findViewById(R.id.activity_main);
+//        layout.addView(requestButton);
+    }
 
 
     //opens google nav on click
@@ -103,6 +120,11 @@ public class PlaceDetailsFragment extends Fragment {
         mDirectionsTextView = v.findViewById(R.id.directions_icon);
         mCallTextView = v.findViewById(R.id.call_icon);
         mRating = v.findViewById(R.id.rating);
+
+        //Uber button
+        mUberRidesButton = new RideRequestButton(getContext());
+        mUberRidesButton = v.findViewById(R.id.uber_icon);
+
 
     } // setViews
 

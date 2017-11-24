@@ -15,7 +15,13 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+
 import java.lang.reflect.Field;
+import java.util.Arrays;
+
+import com.uber.sdk.android.core.UberSdk;
+import com.uber.sdk.core.auth.Scope;
+import com.uber.sdk.rides.client.SessionConfiguration;
 
 public class MainActivity extends AppCompatActivity
     implements FragmentManager.OnBackStackChangedListener {
@@ -28,6 +34,7 @@ public class MainActivity extends AppCompatActivity
     protected static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
 
     private SelectedPlace mSelectedPlace;
+    private SessionConfiguration config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,8 @@ public class MainActivity extends AppCompatActivity
 //          startActivityForResult(intent, SIGN_IN_REQUEST);
             startPlacePickerAPI();
         }
+
+        configureUberSDK();
     } // onCreate
 
     private void startPlacePickerAPI() {
@@ -178,9 +187,9 @@ public class MainActivity extends AppCompatActivity
                 try {
                     if (myPlaceType == field.getInt(null)) {
                         Log.i("Testing", "onCreate: " + field.getName());
-                        String[] name= field.getName().split("_");
-                        String types="";
-                        for (int i = 1; i < name.length; i++){
+                        String[] name = field.getName().split("_");
+                        String types = "";
+                        for (int i = 1; i < name.length; i++) {
                             types = types + name[i] + " ";
                         }
                         String s1 = types.substring(0, 1).toUpperCase();
@@ -191,10 +200,26 @@ public class MainActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
             }
-
         }
         return "error";
 
     } // getPlaceType
+
+    private void configureUberSDK(){
+        config = new SessionConfiguration.Builder()
+                // mandatory
+                .setClientId("uhIYTbs7oF1njNDMbXX-NPQXMdiz3Ymz")
+                // required for enhanced button features
+                .setServerToken("7236uz0ebZ4u6vfuVp85vsfhtOqNsHhc0v1-Xr_y")
+                // required for implicit grant authentication
+                .setRedirectUri("https://localhost:8000")
+                // required scope for Ride Request Widget features
+                .setScopes(Arrays.asList(Scope.RIDE_WIDGETS))
+                // optional: set sandbox as operating environment
+                .setEnvironment(SessionConfiguration.Environment.SANDBOX)
+                .build();
+
+        UberSdk.initialize(config);
+    }
 
 } // MainActivity
