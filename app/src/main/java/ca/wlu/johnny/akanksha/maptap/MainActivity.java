@@ -1,16 +1,15 @@
 package ca.wlu.johnny.akanksha.maptap;
 
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,16 +30,14 @@ import com.uber.sdk.core.auth.Scope;
 import com.uber.sdk.rides.client.SessionConfiguration;
 
 public class MainActivity extends AppCompatActivity
-    implements FragmentManager.OnBackStackChangedListener {
+        implements FragmentManager.OnBackStackChangedListener {
 
     // Constants
     private static final String BUNDLE_STATE_CODE = "ca.wlu.johnny.akanksha.maptap.MainActivity";
     private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
-    private static final long LOCATION_REFRESH_TIME = 5000;
-    private static final float LOCATION_REFRESH_DISTANCE = 0;
-    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 11;
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final int SIGN_IN_REQUEST = 0;
+    static final int REQUEST_LOCATION = 2;
 
     // global variables
     private SelectedPlace mSelectedPlace;
@@ -71,73 +68,14 @@ public class MainActivity extends AppCompatActivity
 //          Intent intent = new Intent(this, SignInActivity.class);
 //          startActivityForResult(intent, SIGN_IN_REQUEST);
             mUser = mDbUtils.getUser("akanksha@wlu.ca");
-            System.out.println("----------------------- "+mUser);
+            System.out.println("----------------------- " + mUser);
             startPlacePickerAPI();
         }
 
-        requestAccessToUserLocation();
+        mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        getLocation();
         configureUberSDK();
     } // onCreate
-
-    private void requestAccessToUserLocation(){
-        // request access to location
-        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_FINE_LOCATION )
-                != PackageManager.PERMISSION_GRANTED ) {
-            mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-
-            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  },
-                    MY_PERMISSION_ACCESS_FINE_LOCATION );
-        }
-    }
-
-    private final LocationListener mLocationListener = new LocationListener() {
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras){
-            switch (status) {
-                case LocationProvider.AVAILABLE:
-                    onProviderEnabled(provider);
-                    break;
-                case LocationProvider.OUT_OF_SERVICE:
-                    break;
-                case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                    break;
-            }
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            try {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                        LOCATION_REFRESH_DISTANCE, mLocationListener);
-                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude());
-                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude());
-                System.out.println("-----------------------Akanksha's LAT "+mUser.getLat());
-                System.out.println("-----------------------Akanksha's LNG "+mUser.getLng());
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            try {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                        LOCATION_REFRESH_DISTANCE, mLocationListener);
-                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude());
-                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude());
-                System.out.println("-----------------------Akanksha's LAT "+mUser.getLat());
-                System.out.println("-----------------------Akanksha's LNG "+mUser.getLng());
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            }
-        }
-    };
 
     private void startPlacePickerAPI() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -305,6 +243,40 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         UberSdk.initialize(config);
+    }
+
+    void getLocation() {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+
+        } else {
+            Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if (location != null){
+                double latti = location.getLatitude();
+                double longi = location.getLongitude();
+                mUser.setLat(latti);
+                mUser.setLng(longi);
+
+                System.out.println("-----------------------mUser lat " + mUser.getLat());
+                System.out.println("-----------------------mUser lng " + mUser.getLng());
+
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_LOCATION:
+                getLocation();
+                break;
+        }
     }
 
 } // MainActivity
