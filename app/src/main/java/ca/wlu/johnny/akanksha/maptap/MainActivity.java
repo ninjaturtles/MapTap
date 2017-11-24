@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
     protected static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
 
     private SelectedPlace mSelectedPlace;
-    private SessionConfiguration config;
+    public static SessionConfiguration config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +147,10 @@ public class MainActivity extends AppCompatActivity
                     startPlacePickerAPI();
                     return;
                 }
+//                System.out.println("----------------------- NAME "+place.getName());
+//                System.out.println("----------------------- RATING "+place.getRating());
+//                System.out.println("----------------------- LEVEL "+place.getPriceLevel());
+//                System.out.println("----------------------- LAT "+place.getLatLng());
 
                 String name = place.getName().toString();
                 String address = place.getAddress().toString();
