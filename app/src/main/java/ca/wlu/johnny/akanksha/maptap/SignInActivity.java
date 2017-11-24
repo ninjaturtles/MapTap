@@ -23,6 +23,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final int REQUEST_SIGNUP = 0;
 
     private DbUtils mDbUtils;
+    private User mUser;
 
     @InjectView(R.id.input_email) EditText emailText;
     @InjectView(R.id.input_password) EditText passwordText;
@@ -86,6 +87,9 @@ public class SignInActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
 
+                String email = data.getStringExtra("email");
+                mUser = mDbUtils.getUser(email);
+
                 //successful sign in logic
                 onSignInSuccess();
                 this.finish();
@@ -102,9 +106,14 @@ public class SignInActivity extends AppCompatActivity {
     public void onSignInSuccess() {
         Log.d(TAG, "--------signed in successfully-------");
 
-        Toast.makeText(getBaseContext(), "Sign in successfully", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signed in successfully", Toast.LENGTH_LONG).show();
 
         loginButton.setEnabled(true);
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("email", mUser.getEmail());
+
+        setResult(RESULT_OK, resultIntent);
         finish();
     }
 
@@ -127,13 +136,13 @@ public class SignInActivity extends AppCompatActivity {
 
         boolean authentic = true;
 
-        User user = mDbUtils.getUser(email);
+        mUser = mDbUtils.getUser(email);
 
-        if (user == null) {
+        if (mUser == null) {
             authentic = false;
-        } else if (!user.getEmail().equals(email)) {
+        } else if (!mUser.getEmail().equals(email)) {
             authentic = false;
-        } else if (!user.getPassword().equals(password)) {
+        } else if (!mUser.getPassword().equals(password)) {
             authentic = false;
         }
 

@@ -22,6 +22,7 @@ public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
 
     private DbUtils mDbUtils;
+    private User mUser;
 
     @InjectView(R.id.input_name) EditText nameText;
     @InjectView(R.id.input_email) EditText emailText;
@@ -74,8 +75,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         // sign up logic.
         if (isUnique(email)) {
-            User newUser = new User(name, email, password);
-            mDbUtils.addUser(newUser);
+            mUser = new User(name, email, password);
+            mDbUtils.addUser(mUser);
+
             onSignUpSuccess();
 
         } else {
@@ -85,12 +87,15 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-
     public void onSignUpSuccess() {
         Toast.makeText(getBaseContext(), "Sign up successfully", Toast.LENGTH_LONG).show();
 
         signupButton.setEnabled(true);
-        setResult(RESULT_OK, null);
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("email", mUser.getEmail());
+
+        setResult(RESULT_OK, resultIntent);
         finish();
     }
 

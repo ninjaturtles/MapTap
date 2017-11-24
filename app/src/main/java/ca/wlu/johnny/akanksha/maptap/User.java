@@ -15,6 +15,8 @@ public class User implements Parcelable {
     private String mName;
     private String mEmail;
     private String mPassword;
+    private double mLat;
+    private double mLng;
 
     @Override
     public int describeContents() {
@@ -38,6 +40,8 @@ public class User implements Parcelable {
         this.mName = in.readString();
         this.mEmail = in.readString();
         this.mPassword = in.readString();
+        this.mLat = in.readDouble();
+        this.mLng = in.readDouble();
     }
 
     @Override
@@ -46,6 +50,8 @@ public class User implements Parcelable {
         dest.writeString(mName);
         dest.writeString(mEmail);
         dest.writeString(mPassword);
+        dest.writeDouble(mLat);
+        dest.writeDouble(mLng);
     }
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
@@ -72,20 +78,35 @@ public class User implements Parcelable {
         return mId;
     }
 
-    public String getName(){
+    public String getName() {
 
         return mName;
     }
 
-    public String getEmail(){
+    public String getEmail() {
 
         return mEmail;
     }
 
-    public String getPassword(){
+    public String getPassword() {
 
         return mPassword;
     }
 
+    public double getLat() {
+        return mLat;
+    }
+
+    public double getLng() {
+        return mLng;
+    }
+
+    public void setLat(double myLat) {
+        this.mLat = myLat;
+    }
+
+    public void setLng(double myLng) {
+        this.mLng = myLng;
+    }
 }
 

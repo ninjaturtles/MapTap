@@ -2,8 +2,15 @@ package ca.wlu.johnny.akanksha.maptap;
 
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,14 +34,20 @@ public class MainActivity extends AppCompatActivity
     implements FragmentManager.OnBackStackChangedListener {
 
     // Constants
-    private static int PLACE_PICKER_REQUEST = 1;
-    private static int SIGN_IN_REQUEST = 0;
-    protected static int WEBVIEW_REQUEST = 2;
     private static final String BUNDLE_STATE_CODE = "ca.wlu.johnny.akanksha.maptap.MainActivity";
-    protected static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
+    private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
+    private static final long LOCATION_REFRESH_TIME = 5000;
+    private static final float LOCATION_REFRESH_DISTANCE = 0;
+    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 11;
+    private static final int PLACE_PICKER_REQUEST = 1;
+    private static final int SIGN_IN_REQUEST = 0;
 
+    // global variables
     private SelectedPlace mSelectedPlace;
     public static SessionConfiguration config;
+    public LocationManager mLocationManager;
+    private User mUser;
+    private DbUtils mDbUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +59,9 @@ public class MainActivity extends AppCompatActivity
         //Handle when activity is recreated like on orientation Change
         shouldDisplayHomeUp();
 
+        // setup database connection
+        mDbUtils = DbUtils.get(this);
+
         // retrieve state if not null
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
@@ -54,11 +70,74 @@ public class MainActivity extends AppCompatActivity
             //TODO: leave commented out, for testing only
 //          Intent intent = new Intent(this, SignInActivity.class);
 //          startActivityForResult(intent, SIGN_IN_REQUEST);
+            mUser = mDbUtils.getUser("akanksha@wlu.ca");
+            System.out.println("----------------------- "+mUser);
             startPlacePickerAPI();
         }
 
+        requestAccessToUserLocation();
         configureUberSDK();
     } // onCreate
+
+    private void requestAccessToUserLocation(){
+        // request access to location
+        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_FINE_LOCATION )
+                != PackageManager.PERMISSION_GRANTED ) {
+            mLocationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+
+            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  },
+                    MY_PERMISSION_ACCESS_FINE_LOCATION );
+        }
+    }
+
+    private final LocationListener mLocationListener = new LocationListener() {
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras){
+            switch (status) {
+                case LocationProvider.AVAILABLE:
+                    onProviderEnabled(provider);
+                    break;
+                case LocationProvider.OUT_OF_SERVICE:
+                    break;
+                case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                    break;
+            }
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            try {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                        LOCATION_REFRESH_DISTANCE, mLocationListener);
+                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude());
+                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude());
+                System.out.println("-----------------------Akanksha's LAT "+mUser.getLat());
+                System.out.println("-----------------------Akanksha's LNG "+mUser.getLng());
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            try {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                        LOCATION_REFRESH_DISTANCE, mLocationListener);
+                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude());
+                mUser.setLat(mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude());
+                System.out.println("-----------------------Akanksha's LAT "+mUser.getLat());
+                System.out.println("-----------------------Akanksha's LNG "+mUser.getLng());
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     private void startPlacePickerAPI() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -73,7 +152,6 @@ public class MainActivity extends AppCompatActivity
         } catch (GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -135,6 +213,9 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == SIGN_IN_REQUEST) {
+
+            String email = data.getStringExtra("email");
+            mUser = mDbUtils.getUser(email);
             startPlacePickerAPI();
         }
 
@@ -169,7 +250,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (fragment == null) {
 
-                    fragment = PlaceDetailsFragment.newInstance(mSelectedPlace);
+                    fragment = PlaceDetailsFragment.newInstance(mSelectedPlace, mUser);
                     fm.beginTransaction().add(R.id.fragment_container, fragment)
                             .addToBackStack(FRAGMENT_PLACE_DETAILS)
                             .commitAllowingStateLoss();

@@ -39,11 +39,10 @@ import static android.content.Context.LOCATION_SERVICE;
 public class PlaceDetailsFragment extends Fragment {
 
     private static final String ARG_PLACE  = "my_place";
-    private static final long LOCATION_REFRESH_TIME = 5000;
-    private static final float LOCATION_REFRESH_DISTANCE = 0;
-    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 11;
+    private static final String ARG_USER  = "my_user";
 
     private SelectedPlace mPlace;
+    private User mUser;
     private TextView mPlaceNameTextView;
     private TextView mPlaceTypeTextView;
     private TextView mPlacePriceTextView;
@@ -53,14 +52,11 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mPlaceWebsiteIcon;
     private RatingBar mRating;
     private RideRequestButton mUberRidesButton;
-    private LocationManager mLocationManager;
-    private double mLat;
-    private double mLng;
 
-
-    public static PlaceDetailsFragment newInstance(SelectedPlace place){
+    public static PlaceDetailsFragment newInstance(SelectedPlace place, User user){
         Bundle args = new Bundle();
         args.putParcelable(ARG_PLACE, place);
+        args.putParcelable(ARG_USER, user);
 
         PlaceDetailsFragment placeDetailsFragment = new PlaceDetailsFragment();
         placeDetailsFragment.setArguments(args);
@@ -71,64 +67,13 @@ public class PlaceDetailsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
         getActionBar().setTitle("Place Details");
 
-        if ( ContextCompat.checkSelfPermission( getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
-            mLocationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
-
-            ActivityCompat.requestPermissions( getActivity(), new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  },
-                    MY_PERMISSION_ACCESS_FINE_LOCATION );
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE,mLocationListener);
-
-            mLat =  mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude();
-            mLng = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude();
-        }
-
-
         mPlace = getArguments().getParcelable(ARG_PLACE);
-
+        mUser = getArguments().getParcelable(ARG_USER);
 
     } // onCreate
-
-    private final LocationListener mLocationListener = new LocationListener() {
-
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras){
-//            final String tvTxt = textView.getText().toString();
-            switch (status) {
-                case LocationProvider.AVAILABLE:
-//                    textView.setText(tvTxt + "Network location available again\n");
-                    break;
-                case LocationProvider.OUT_OF_SERVICE:
-//                    textView.setText(tvTxt + "Network location out of service\n");
-                    break;
-                case LocationProvider.TEMPORARILY_UNAVAILABLE:
-//                    textView.setText(tvTxt
-//                            + "Network location temporarily unavailable\n");
-                    break;
-            }
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-
-        }
-
-    };
-    private ActionBar getActionBar() {
-        return ((AppCompatActivity) getActivity()).getSupportActionBar();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -138,15 +83,25 @@ public class PlaceDetailsFragment extends Fragment {
         onDirectionsClick();
         onCallClick();
         onUberClick(view);
+        onWebsiteClick();
 
         updateUI();
         return view;
     } // onCreateView
 
+    private ActionBar getActionBar() {
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
+    } // ActionBar
+
     private void onUberClick(View v) {
         //Uber button
+
         mUberRidesButton = new RideRequestButton(getContext());
         mUberRidesButton = v.findViewById(R.id.uber_icon);
+
+        System.out.println("------------------------ User lat "+mUser.getLat());
+        System.out.println("------------------------ User lng "+mUser.getLng());
+
 
         RideParameters rideParams = new RideParameters.Builder()
                 // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
@@ -154,19 +109,16 @@ public class PlaceDetailsFragment extends Fragment {
                 // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
 //                .setDropoffLocation(43.4726916, -80.5264207, mPlace.getName(), mPlace.getAddress())
                 // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                .setPickupLocation(mLat, mLng, "blah", "blah" )
-                .setDropoffLocation(43.4726916, -80.5264207, mPlace.getName(), mPlace.getAddress())
+                .setPickupLocation(mUser.getLat(), mUser.getLng(), mUser.getName(), "blah" )
+                .setDropoffLocation(parsePlaceLat(), parsePlaceLng(), mPlace.getName(), mPlace.getAddress())
                 .build();
         // set parameters for the RideRequestButton instance
         mUberRidesButton.setRideParameters(rideParams);
-        System.out.println("--------------------------HERE------------------");
         ServerTokenSession session = new ServerTokenSession(MainActivity.config);
         mUberRidesButton.setSession(session);
         mUberRidesButton.loadRideInformation();
 
-
         RideRequestButtonCallback callback = new RideRequestButtonCallback() {
-
 
             @Override
             public void onRideInformationLoaded() {
@@ -183,9 +135,19 @@ public class PlaceDetailsFragment extends Fragment {
                 // Unexpected error, very likely an IOException
             }
         };
-        mUberRidesButton.setCallback(callback);
-    }
 
+        mUberRidesButton.setCallback(callback);
+    } //onUberClick
+
+    public static boolean isAppInstalled(Context context, String packageName) {
+        try {
+            context.getPackageManager().getApplicationInfo(packageName, 0);
+            return true;
+        }
+        catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
 
     //opens google nav on click
     private void onDirectionsClick() {
@@ -198,10 +160,15 @@ public class PlaceDetailsFragment extends Fragment {
                 startActivity(mapIntent);
             }
         });
-    }
+    } // onDirectionsClick
 
     //opens call
     private void onCallClick() {
+        // unclickable if place has no number
+        if (mPlace.getPhoneNumber().equals("")) {
+            return;
+        }
+
         mCallTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -210,7 +177,26 @@ public class PlaceDetailsFragment extends Fragment {
                 startActivity(intent);
             }
         });
-    }
+    } // onCallClick
+
+    private void onWebsiteClick() {
+        // unclickable if place has no url
+        if (mPlace.getUrl().equals("N/A")) {
+            return;
+        }
+
+        mPlaceWebsiteIcon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (isNetworkAvailable()) {
+                    Intent webViewIntent = WebViewActivity.newIntent(getActivity(), mPlace.getUrl());
+                    startActivity(webViewIntent);
+
+                } else {
+                    Toast.makeText(getActivity(), "Network not available", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    } // onWebsiteClick
 
     private void setViews(View v) {
         mPlaceNameTextView = v.findViewById(R.id.place_name);
@@ -221,7 +207,6 @@ public class PlaceDetailsFragment extends Fragment {
         mDirectionsTextView = v.findViewById(R.id.directions_icon);
         mCallTextView = v.findViewById(R.id.call_icon);
         mRating = v.findViewById(R.id.rating);
-
 
     } // setViews
 
@@ -247,24 +232,7 @@ public class PlaceDetailsFragment extends Fragment {
         float ratings = mPlace.getRating();
         mRating.setRating(ratings);
 
-
-        setUpWebsiteIcon();
-
     } // updateUI
-
-    private void setUpWebsiteIcon() {
-        mPlaceWebsiteIcon.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (isNetworkAvailable()) {
-                    Intent webViewIntent = WebViewActivity.newIntent(getActivity(), mPlace.getUrl());
-                    startActivity(webViewIntent);
-
-                } else {
-                    Toast.makeText(getActivity(), "Network not available", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager) getActivity()
@@ -278,20 +246,17 @@ public class PlaceDetailsFragment extends Fragment {
         return false;
     }
 
-    private double parseLat(){
+    private double parsePlaceLat(){
         double lat =  Double.parseDouble(mPlace.getLatLng().toString().split(",")[0].substring(10));
         System.out.println("------------------------ Parsed lat "+lat);
         return lat;
-
     }
 
-    private double parseLng(){
+    private double parsePlaceLng(){
         String lng = mPlace.getLatLng().toString().split(",")[1];
         double lang= Double.parseDouble(lng.substring(0, lng.lastIndexOf(")")));
-        System.out.println("------------------------ Parsed lang "+lang);
+        System.out.println("------------------------ Parsed lng "+lang);
         return lang;
     }
-
-
 
 } // PlaceDetailsFragment
