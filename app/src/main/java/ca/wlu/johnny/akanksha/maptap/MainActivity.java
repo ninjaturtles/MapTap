@@ -21,6 +21,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.location.places.GeoDataClient;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -35,6 +36,10 @@ public class MainActivity extends AppCompatActivity
     // Constants
     private static final String BUNDLE_STATE_CODE = "ca.wlu.johnny.akanksha.maptap.MainActivity";
     private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
+    private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
+    private static final long LOCATION_REFRESH_TIME = 5000;
+    private static final float LOCATION_REFRESH_DISTANCE = 0;
+    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 11;
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final int SIGN_IN_REQUEST = 0;
     static final int REQUEST_LOCATION = 2;
@@ -107,12 +112,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSaveInstanceState(Bundle savedStateInstance) {
         super.onSaveInstanceState(savedStateInstance);
+        savedStateInstance.putParcelable(ARG_USER, mUser);
     } // onSaveInstanceState
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
+        mUser = savedInstanceState.getParcelable(ARG_USER);
     } // onRestoreInstanceState
 
     @Override

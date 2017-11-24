@@ -1,14 +1,8 @@
 package ca.wlu.johnny.akanksha.maptap;
 
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -30,16 +24,14 @@ import com.uber.sdk.rides.client.ServerTokenSession;
 import com.uber.sdk.android.rides.RideRequestButton;
 import com.uber.sdk.rides.client.error.ApiError;
 
-import static android.content.Context.LOCATION_SERVICE;
-
 /**
  * Created by johnny on 2017-11-22.
  */
 
 public class PlaceDetailsFragment extends Fragment {
 
-    private static final String ARG_PLACE  = "my_place";
-    private static final String ARG_USER  = "my_user";
+    private static final String ARG_PLACE  = "ca.wlu.johnny.akanksha.maptap.Place";
+    private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
 
     private SelectedPlace mPlace;
     private User mUser;
@@ -66,12 +58,18 @@ public class PlaceDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // retrieve state if not null
+        if (savedInstanceState != null) {
+            mPlace = savedInstanceState.getParcelable(ARG_PLACE);
+            mUser = savedInstanceState.getParcelable(ARG_USER);
+        } else {
+            mPlace = getArguments().getParcelable(ARG_PLACE);
+            mUser = getArguments().getParcelable(ARG_USER);
+        }
+
         setHasOptionsMenu(true);
-
         getActionBar().setTitle("Place Details");
-
-        mPlace = getArguments().getParcelable(ARG_PLACE);
-        mUser = getArguments().getParcelable(ARG_USER);
 
     } // onCreate
 
@@ -88,6 +86,13 @@ public class PlaceDetailsFragment extends Fragment {
         updateUI();
         return view;
     } // onCreateView
+
+    @Override
+    public void onSaveInstanceState(Bundle savedStateInstance) {
+        super.onSaveInstanceState(savedStateInstance);
+        savedStateInstance.putParcelable(ARG_USER, mUser);
+        savedStateInstance.putParcelable(ARG_PLACE, mPlace);
+    } // onSaveInstanceState
 
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -258,5 +263,6 @@ public class PlaceDetailsFragment extends Fragment {
         System.out.println("------------------------ Parsed lng "+lang);
         return lang;
     }
+
 
 } // PlaceDetailsFragment
