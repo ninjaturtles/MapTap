@@ -7,4 +7,6 @@
     <string name="place_details">Place Details</string>
     <string name="google_place_picker_api">AIzaSyCE-ry02VFGXMcDj9cqKYEqoA6-DqdHItQ</string>
     <string name="google_directions_api">AIzaSyCL2bzIc1RakBC6t6xqM-OSpQ7tiLVXUZw</string>
+    <string name="UBER_CLIENT_ID">uhIYTbs7oF1njNDMbXX-NPQXMdiz3Ymz</string>
+    <string name="UBER_REDIRECT_URI">https://localhost:8000</string>
 </resources>
