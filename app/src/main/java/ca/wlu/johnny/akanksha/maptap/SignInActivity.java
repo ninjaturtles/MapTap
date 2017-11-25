@@ -35,6 +35,7 @@ import butterknife.InjectView;
 
 public class SignInActivity extends AppCompatActivity {
 
+    private static final String GENERIC_PASSWORD = "ABC123!@#ZYX987*&^";
     private static final String TAG = "SignInActivity";
     private static final int REQUEST_SIGNUP = 0;
     private CallbackManager mCallbackManager;
@@ -84,13 +85,20 @@ public class SignInActivity extends AppCompatActivity {
                         Log.i("LoginActivity", response.toString());
                         // Get facebook data from login
                         Bundle bFacebookData = getFacebookData(object);
-                        System.out.println("-----------------------------------------FB: " + bFacebookData.getString("email"));
+
+                        if(!isAlreadyRegistered(bFacebookData.getString("email"))){
+                            createNewUserAccount(bFacebookData);
+                        }
                     }
                 });
+
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, first_name, last_name, email"); // Parámetros que pedimos a facebook
+                parameters.putString("fields", "id, first_name, last_name, email");
                 request.setParameters(parameters);
                 request.executeAsync();
+
+                // On complete call onSignInSuccess()
+                onSignInSuccess();
             }
 
             @Override
@@ -115,6 +123,7 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
     }
+
     private Bundle getFacebookData(JSONObject object) {
 
         try {
@@ -145,6 +154,23 @@ public class SignInActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    private boolean isAlreadyRegistered(String email) {
+        mUser = mDbUtils.getUser(email);
+        if (mUser == null) {
+            return false;
+        }
+        return true;
+    }
+
+    private void createNewUserAccount(Bundle bFacebookData) {
+        String name = bFacebookData.getString("name");
+        String email = bFacebookData.getString("email");
+        User newUser = new User(name, email, GENERIC_PASSWORD);
+        mDbUtils.addUser(newUser);
+        mUser = newUser;
+    }
+
     public void login() {
         Log.d(TAG, "--------login-------");
 

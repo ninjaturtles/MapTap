@@ -45,7 +45,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-places:11.2.0'
     compile 'com.uber.sdk:rides-android:0.5.3'
     compile 'com.facebook.android:facebook-login:[4,5)'
+    compile 'com.twilio:client-android:1.2.21'
     testCompile 'junit:junit:4.12'
-
-
 }
