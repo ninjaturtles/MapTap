@@ -9,6 +9,7 @@ import android.os.Parcelable;
 
 public class SelectedPlace implements Parcelable {
 
+    private String mId;
     private String mName;
     private String mAddress;
     private String mPhoneNumber;
@@ -24,9 +25,10 @@ public class SelectedPlace implements Parcelable {
         return 0;
     }
 
-    public SelectedPlace(String myName, String myAddress, String myPhoneNumber,
+    public SelectedPlace(String myId, String myName, String myAddress, String myPhoneNumber,
                          String myUrl, String myLatLng, String myType,
                          int myPrice, float myRating){
+        mId = myId;
         mName = myName;
         mAddress = myAddress;
         mPhoneNumber = myPhoneNumber;
@@ -38,6 +40,7 @@ public class SelectedPlace implements Parcelable {
     }
 
     public SelectedPlace(Parcel in){
+        this.mId = in.readString();
         this.mName = in.readString();
         this.mAddress = in.readString();
         this.mPhoneNumber = in.readString();
@@ -50,6 +53,7 @@ public class SelectedPlace implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
         dest.writeSerializable(mName);
         dest.writeString(mAddress);
         dest.writeString(mPhoneNumber);
@@ -72,6 +76,10 @@ public class SelectedPlace implements Parcelable {
             return new SelectedPlace[size];
         }
     };
+
+    public String getId() {
+        return mId;
+    }
 
     public String getName() {
         return mName;

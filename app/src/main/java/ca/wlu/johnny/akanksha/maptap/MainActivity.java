@@ -5,9 +5,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,12 +22,21 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResponse;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.PlacePhotoResponse;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.core.auth.Scope;
 import com.uber.sdk.rides.client.SessionConfiguration;
@@ -46,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     public LocationManager mLocationManager;
     private User mUser;
     private DbUtils mDbUtils;
+    private GeoDataClient mGeoDataClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +114,6 @@ public class MainActivity extends AppCompatActivity
     public void shouldDisplayHomeUp(){
         //Enable Up button only  if there are entries in the back stack
         boolean canback = getSupportFragmentManager().getBackStackEntryCount()>0;
-        System.out.println(canback);
         getSupportActionBar().setDisplayHomeAsUpEnabled(canback);
     }
 
@@ -161,7 +173,7 @@ public class MainActivity extends AppCompatActivity
 
         else if (requestCode == PLACE_PICKER_REQUEST) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(data, this);
+                Place place = PlacePicker.getPlace(this, data);
 
                 if(place.getName().equals("") && place.getAddress().equals("")) {
                     Toast.makeText(this, "No place chosen", Toast.LENGTH_SHORT).show();
@@ -169,6 +181,7 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
 
+                String id = place.getId();
                 String name = place.getName().toString();
                 String address = place.getAddress().toString();
                 String phoneNumber = (place.getPhoneNumber() == null) ? "N/A" : place.getPhoneNumber().toString();
@@ -178,8 +191,7 @@ public class MainActivity extends AppCompatActivity
                 float rating = place.getRating();
                 int price=place.getPriceLevel();
 
-                mSelectedPlace = new SelectedPlace(name, address, phoneNumber, url, latLng, type, price, rating);
-
+                mSelectedPlace = new SelectedPlace(id, name, address, phoneNumber, url, latLng, type, price, rating);
 
                 FragmentManager fm = getSupportFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
@@ -195,7 +207,7 @@ public class MainActivity extends AppCompatActivity
         }
     } // onActivityResult
 
-    public String getPlaceType(int myPlaceType){
+    private String getPlaceType(int myPlaceType){
 
         Field[] fields = Place.class.getDeclaredFields();
 
@@ -243,7 +255,7 @@ public class MainActivity extends AppCompatActivity
         UberSdk.initialize(config);
     }
 
-    void getLocation() {
+    private void getLocation() {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {

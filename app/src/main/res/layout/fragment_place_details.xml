@@ -57,7 +57,8 @@
             android:layout_height="50dp"
             android:padding="10dp"
             android:text="Call"
-            android:layout_weight="0.25"/>
+
+            android:layout_weight="0.33"/>
 
         <TextView
             android:id="@+id/website_icon"
@@ -65,7 +66,7 @@
             android:text="Website"
             android:layout_height="50dp"
             android:padding="10dp"
-            android:layout_weight="0.25"/>
+            android:layout_weight="0.33"/>
 
 
         <TextView
@@ -74,7 +75,7 @@
             android:layout_height="50dp"
             android:text="Directions"
             android:padding="10dp"
-            android:layout_weight="0.25"/>
+            android:layout_weight="0.33"/>
 
     </LinearLayout>
 
