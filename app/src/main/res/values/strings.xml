@@ -9,4 +9,6 @@
     <string name="google_directions_api">AIzaSyCL2bzIc1RakBC6t6xqM-OSpQ7tiLVXUZw</string>
     <string name="UBER_CLIENT_ID">uhIYTbs7oF1njNDMbXX-NPQXMdiz3Ymz</string>
     <string name="UBER_REDIRECT_URI">https://localhost:8000</string>
+    <string name="facebook_app_id">1691529264238687</string>
+    <string name="fb_login_protocol_scheme">fb1691529264238687</string>
 </resources>

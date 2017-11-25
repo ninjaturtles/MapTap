@@ -15,12 +15,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class SignInActivity extends AppCompatActivity {
+
     private static final String TAG = "SignInActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private CallbackManager mCallbackManager;
+    private LoginButton mLoginButton;
 
     private DbUtils mDbUtils;
     private User mUser;
@@ -42,8 +60,47 @@ public class SignInActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "--------_loginButton clicked-------");
+                Log.d(TAG, "--------loginButton clicked-------");
                 login();
+            }
+        });
+
+        mCallbackManager = CallbackManager.Factory.create();
+
+        mLoginButton = (LoginButton)findViewById(R.id.login_button);
+        mLoginButton.setReadPermissions(Arrays.asList("email"));
+        mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+                String accessToken = loginResult.getAccessToken().getToken();
+                Log.i("accessToken", accessToken);
+
+                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        Log.i("LoginActivity", response.toString());
+                        // Get facebook data from login
+                        Bundle bFacebookData = getFacebookData(object);
+                        System.out.println("-----------------------------------------FB: " + bFacebookData.getString("email"));
+                    }
+                });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id, first_name, last_name, email"); // Parámetros que pedimos a facebook
+                request.setParameters(parameters);
+                request.executeAsync();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+//                info.setText("Login attempt failed.");
             }
         });
 
@@ -58,7 +115,36 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
     }
+    private Bundle getFacebookData(JSONObject object) {
 
+        try {
+            Bundle bundle = new Bundle();
+            String id = object.getString("id");
+
+            try {
+                URL profile_pic = new URL("https://graph.facebook.com/" + id + "/picture?width=200&height=150");
+                Log.i("profile_pic", profile_pic + "");
+                bundle.putString("profile_pic", profile_pic.toString());
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            bundle.putString("idFacebook", id);
+            if (object.has("first_name"))
+                bundle.putString("first_name", object.getString("first_name"));
+            if (object.has("last_name"))
+                bundle.putString("last_name", object.getString("last_name"));
+            if (object.has("email"))
+                bundle.putString("email", object.getString("email"));
+            return bundle;
+        }
+        catch(JSONException e) {
+            Log.d(TAG,"Error parsing JSON");
+        }
+        return null;
+    }
     public void login() {
         Log.d(TAG, "--------login-------");
 
@@ -84,6 +170,7 @@ public class SignInActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
 
@@ -173,4 +260,4 @@ public class SignInActivity extends AppCompatActivity {
 
         return valid;
     }
-}
+}//End of class

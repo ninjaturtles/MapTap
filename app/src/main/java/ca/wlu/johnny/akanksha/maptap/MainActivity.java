@@ -5,11 +5,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,21 +19,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.GeoDataClient;
+
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlacePhotoMetadata;
-import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
-import com.google.android.gms.location.places.PlacePhotoMetadataResponse;
-import com.google.android.gms.location.places.PlacePhotoMetadataResult;
-import com.google.android.gms.location.places.PlacePhotoResponse;
-import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.core.auth.Scope;
 import com.uber.sdk.rides.client.SessionConfiguration;
@@ -57,8 +46,6 @@ public class MainActivity extends AppCompatActivity
     public LocationManager mLocationManager;
     private User mUser;
     private DbUtils mDbUtils;
-    private GeoDataClient mGeoDataClient;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +66,10 @@ public class MainActivity extends AppCompatActivity
 
         } else {
             //TODO: leave commented out, for testing only
-//          Intent intent = new Intent(this, SignInActivity.class);
-//          startActivityForResult(intent, SIGN_IN_REQUEST);
-            mUser = mDbUtils.getUser("akanksha@wlu.ca"); //for testing
-            startPlacePickerAPI();
+          Intent intent = new Intent(this, SignInActivity.class);
+          startActivityForResult(intent, SIGN_IN_REQUEST);
+//            mUser = mDbUtils.getUser("akanksha@wlu.ca"); //for testing
+//            startPlacePickerAPI();
         }
 
         mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
