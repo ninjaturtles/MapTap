@@ -52,6 +52,7 @@ public class PlaceDetailsFragment extends Fragment {
 
         PlaceDetailsFragment placeDetailsFragment = new PlaceDetailsFragment();
         placeDetailsFragment.setArguments(args);
+
         return placeDetailsFragment;
     }
 
@@ -99,22 +100,14 @@ public class PlaceDetailsFragment extends Fragment {
     } // ActionBar
 
     private void onUberClick(View v) {
-        //Uber button
 
+        //Uber button
         mUberRidesButton = new RideRequestButton(getContext());
         mUberRidesButton = v.findViewById(R.id.uber_icon);
 
-        System.out.println("------------------------ User lat "+mUser.getLat());
-        System.out.println("------------------------ User lng "+mUser.getLng());
-
 
         RideParameters rideParams = new RideParameters.Builder()
-                // Optional product_id from /v1/products endpoint (e.g. UberX). If not provided, most cost-efficient product will be used
-//                .setProductId("a1111c8c-c720-46c3-8534-2fcdd730040d")
-                // Required for price estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of dropoff location
-//                .setDropoffLocation(43.4726916, -80.5264207, mPlace.getName(), mPlace.getAddress())
-                // Required for pickup estimates; lat (Double), lng (Double), nickname (String), formatted address (String) of pickup location
-                .setPickupLocation(mUser.getLat(), mUser.getLng(), mUser.getName(), "blah" )
+                .setPickupLocation(mUser.getLat(), mUser.getLng(), mUser.getName(), "---" )
                 .setDropoffLocation(parsePlaceLat(), parsePlaceLng(), mPlace.getName(), mPlace.getAddress())
                 .build();
         // set parameters for the RideRequestButton instance
@@ -142,6 +135,8 @@ public class PlaceDetailsFragment extends Fragment {
         };
 
         mUberRidesButton.setCallback(callback);
+
+
     } //onUberClick
 
     public static boolean isAppInstalled(Context context, String packageName) {

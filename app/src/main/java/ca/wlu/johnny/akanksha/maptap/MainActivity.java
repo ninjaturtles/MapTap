@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,7 +23,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -34,12 +34,8 @@ public class MainActivity extends AppCompatActivity
         implements FragmentManager.OnBackStackChangedListener {
 
     // Constants
-    private static final String BUNDLE_STATE_CODE = "ca.wlu.johnny.akanksha.maptap.MainActivity";
     private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
     private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
-    private static final long LOCATION_REFRESH_TIME = 5000;
-    private static final float LOCATION_REFRESH_DISTANCE = 0;
-    private static final int MY_PERMISSION_ACCESS_FINE_LOCATION = 11;
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final int SIGN_IN_REQUEST = 0;
     static final int REQUEST_LOCATION = 2;
@@ -72,21 +68,21 @@ public class MainActivity extends AppCompatActivity
             //TODO: leave commented out, for testing only
 //          Intent intent = new Intent(this, SignInActivity.class);
 //          startActivityForResult(intent, SIGN_IN_REQUEST);
-            mUser = mDbUtils.getUser("akanksha@wlu.ca");
-            System.out.println("----------------------- " + mUser);
+            mUser = mDbUtils.getUser("akanksha@wlu.ca"); //for testing
             startPlacePickerAPI();
         }
 
         mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         getLocation();
         configureUberSDK();
+
     } // onCreate
 
     private void startPlacePickerAPI() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
         try {
-            Intent placePickerIntent = builder.build(getApplicationContext());
+            Intent placePickerIntent = builder.build(this);
             startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
 
         } catch (GooglePlayServicesRepairableException e) {
@@ -172,10 +168,6 @@ public class MainActivity extends AppCompatActivity
                     startPlacePickerAPI();
                     return;
                 }
-//                System.out.println("----------------------- NAME "+place.getName());
-//                System.out.println("----------------------- RATING "+place.getRating());
-//                System.out.println("----------------------- LEVEL "+place.getPriceLevel());
-//                System.out.println("----------------------- LAT "+place.getLatLng());
 
                 String name = place.getName().toString();
                 String address = place.getAddress().toString();
@@ -262,14 +254,10 @@ public class MainActivity extends AppCompatActivity
             Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             if (location != null){
-                double latti = location.getLatitude();
-                double longi = location.getLongitude();
-                mUser.setLat(latti);
-                mUser.setLng(longi);
-
-                System.out.println("-----------------------mUser lat " + mUser.getLat());
-                System.out.println("-----------------------mUser lng " + mUser.getLng());
-
+                double lat= location.getLatitude();
+                double lng = location.getLongitude();
+                mUser.setLat(lat);
+                mUser.setLng(lng);
             }
         }
     }
