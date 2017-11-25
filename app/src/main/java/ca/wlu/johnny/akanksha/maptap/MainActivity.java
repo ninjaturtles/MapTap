@@ -1,6 +1,5 @@
 package ca.wlu.johnny.akanksha.maptap;
 
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -73,7 +72,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        getLocation();
+
+        if (mUser != null) {
+            getLocation();
+        }
+
         configureUberSDK();
 
     } // onCreate
@@ -155,6 +158,7 @@ public class MainActivity extends AppCompatActivity
 
             String email = data.getStringExtra("email");
             mUser = mDbUtils.getUser(email);
+            getLocation();
             startPlacePickerAPI();
         }
 
