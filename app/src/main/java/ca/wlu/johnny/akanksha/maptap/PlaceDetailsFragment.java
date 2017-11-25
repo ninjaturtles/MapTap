@@ -1,6 +1,7 @@
 package ca.wlu.johnny.akanksha.maptap;
 
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -46,6 +47,7 @@ public class PlaceDetailsFragment extends Fragment {
 
     private SelectedPlace mPlace;
     private User mUser;
+    private Resources res;
     private TextView mPlaceNameTextView;
     private TextView mPlaceTypeTextView;
     private TextView mPlacePriceTextView;
@@ -73,6 +75,7 @@ public class PlaceDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mGeoDataClient = Places.getGeoDataClient(getActivity(), null);
+        res = getResources();
 
         // retrieve state if not null
         if (savedInstanceState != null) {
@@ -120,7 +123,6 @@ public class PlaceDetailsFragment extends Fragment {
         mUberRidesButton = new RideRequestButton(getContext());
         mUberRidesButton = v.findViewById(R.id.uber_icon);
 
-
         RideParameters rideParams = new RideParameters.Builder()
                 .setPickupLocation(mUser.getLat(), mUser.getLng(), mUser.getName(), "---" )
                 .setDropoffLocation(parsePlaceLat(), parsePlaceLng(), mPlace.getName(), mPlace.getAddress())
@@ -150,19 +152,7 @@ public class PlaceDetailsFragment extends Fragment {
         };
 
         mUberRidesButton.setCallback(callback);
-
-
     } //onUberClick
-
-    public static boolean isAppInstalled(Context context, String packageName) {
-        try {
-            context.getPackageManager().getApplicationInfo(packageName, 0);
-            return true;
-        }
-        catch (PackageManager.NameNotFoundException e) {
-            return false;
-        }
-    }
 
     //opens google nav on click
     private void onDirectionsClick() {
@@ -284,6 +274,12 @@ public class PlaceDetailsFragment extends Fragment {
                 // Get the PlacePhotoMetadataBuffer (metadata for all of the photos).
                 PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
                 // Get the first photo in the list.
+                if (photoMetadataBuffer.getCount() == 0) {
+                    int resourceId = res.getIdentifier("nophoto", "drawable", getActivity().getPackageName());
+                    mPlaceImageView.setImageResource(resourceId);
+                    return;
+                }
+
                 PlacePhotoMetadata photoMetadata = photoMetadataBuffer.get(0);
                 // Get the attribution text.
                 CharSequence attribution = photoMetadata.getAttributions();
