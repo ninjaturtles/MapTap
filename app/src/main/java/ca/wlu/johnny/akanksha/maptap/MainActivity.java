@@ -172,17 +172,7 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
 
-                String id = place.getId();
-                String name = place.getName().toString();
-                String address = place.getAddress().toString();
-                String phoneNumber = (place.getPhoneNumber() == null) ? "N/A" : place.getPhoneNumber().toString();
-                String url = (place.getWebsiteUri() == null) ? "N/A" : place.getWebsiteUri().toString();
-                String latLng = place.getLatLng().toString();
-                String type = getPlaceType(place.getPlaceTypes().get(0));
-                float rating = place.getRating();
-                int price=place.getPriceLevel();
-
-                mSelectedPlace = new SelectedPlace(id, name, address, phoneNumber, url, latLng, type, price, rating);
+                processPlaceAttributes(place);
 
                 FragmentManager fm = getSupportFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
@@ -197,6 +187,20 @@ public class MainActivity extends AppCompatActivity
             }
         }
     } // onActivityResult
+
+    private void processPlaceAttributes(Place place) {
+        String id = place.getId();
+        String name = place.getName().toString();
+        String address = place.getAddress().toString();
+        String phoneNumber = (place.getPhoneNumber() == null) ? "N/A" : place.getPhoneNumber().toString();
+        String url = (place.getWebsiteUri() == null) ? "N/A" : place.getWebsiteUri().toString();
+        String latLng = place.getLatLng().toString();
+        String type = getPlaceType(place.getPlaceTypes().get(0));
+        float rating = place.getRating();
+        int price=place.getPriceLevel();
+
+        mSelectedPlace = new SelectedPlace(id, name, address, phoneNumber, url, latLng, type, price, rating);
+    }
 
     private String getPlaceType(int myPlaceType){
 
@@ -256,7 +260,7 @@ public class MainActivity extends AppCompatActivity
         } else {
             Location location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-            if (location != null){
+            if (location != null && mUser != null){
                 double lat= location.getLatitude();
                 double lng = location.getLongitude();
                 mUser.setLat(lat);

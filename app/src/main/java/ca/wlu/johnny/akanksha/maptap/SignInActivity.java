@@ -85,10 +85,11 @@ public class SignInActivity extends AppCompatActivity {
                         Log.i("LoginActivity", response.toString());
                         // Get facebook data from login
                         Bundle bFacebookData = getFacebookData(object);
-
-                        if(!isAlreadyRegistered(bFacebookData.getString("email"))){
-                            createNewUserAccount(bFacebookData);
-                        }
+                      if(!isAlreadyRegistered(bFacebookData.getString("email"))){
+                          createNewUserAccount(bFacebookData);
+                      }
+                        // On complete call onSignInSuccess()
+                        onSignInSuccess();
                     }
                 });
 
@@ -96,9 +97,6 @@ public class SignInActivity extends AppCompatActivity {
                 parameters.putString("fields", "id, first_name, last_name, email");
                 request.setParameters(parameters);
                 request.executeAsync();
-
-                // On complete call onSignInSuccess()
-                onSignInSuccess();
             }
 
             @Override
@@ -117,7 +115,6 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start the Sign up activity
-                Log.d(TAG, "--------_signupLink clicked-------");
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
@@ -164,7 +161,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void createNewUserAccount(Bundle bFacebookData) {
-        String name = bFacebookData.getString("name");
+        String name = bFacebookData.getString("first_name");
         String email = bFacebookData.getString("email");
         User newUser = new User(name, email, GENERIC_PASSWORD);
         mDbUtils.addUser(newUser);
@@ -197,6 +194,7 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_SIGNUP) {
             if (resultCode == RESULT_OK) {
 

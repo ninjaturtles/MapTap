@@ -69,7 +69,7 @@ public class PlaceDetailsFragment extends Fragment {
         placeDetailsFragment.setArguments(args);
 
         return placeDetailsFragment;
-    }
+    } // newInstance
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -171,7 +171,7 @@ public class PlaceDetailsFragment extends Fragment {
     //opens call
     private void onCallClick() {
         // unclickable if place has no number
-        if (mPlace.getPhoneNumber().equals("")) {
+        if (mPlace.getPhoneNumber().equals("N/A")) {
             return;
         }
 
