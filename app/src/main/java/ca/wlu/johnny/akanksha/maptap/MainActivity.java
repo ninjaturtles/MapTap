@@ -3,6 +3,7 @@ package ca.wlu.johnny.akanksha.maptap;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -35,16 +38,21 @@ public class MainActivity extends AppCompatActivity
     // Constants
     private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
     private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
-    private static final int PLACE_PICKER_REQUEST = 1;
+    private static final String ARG_SHARED_PREFERENCE = "ca.wlu.johnny.akanksha.maptap.sharedPerefernce";
+    private static final String ARG_SESSION_EXISTS = "ca.wlu.johnny.akanksha.maptap.sessionExists";
     private static final int SIGN_IN_REQUEST = 0;
-    static final int REQUEST_LOCATION = 2;
+    private static final int PLACE_PICKER_REQUEST = 1;
+    private static final int REQUEST_LOCATION = 2;
+    private static final int SHARED_PREFERENCE_REQUEST = 3;
 
     // global variables
+    protected static SessionConfiguration config;
+    protected static SharedPreferences sharedpreferences;
+    protected LocationManager mLocationManager;
     private SelectedPlace mSelectedPlace;
-    public static SessionConfiguration config;
-    public LocationManager mLocationManager;
     private User mUser;
     private DbUtils mDbUtils;
+    private Button mLogOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +67,24 @@ public class MainActivity extends AppCompatActivity
         // setup database connection
         mDbUtils = DbUtils.get(this);
 
+        // verify if the user has "session" started or not
+        sharedpreferences = getApplicationContext().getSharedPreferences(ARG_SHARED_PREFERENCE, SHARED_PREFERENCE_REQUEST);
+        String userEmail = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
+
+        // if session exists, no need to login again
+        if (userEmail != null) {
+            mUser = mDbUtils.getUser(userEmail);
+            startPlacePickerAPI();
+            Toast.makeText(this, "Welcome back, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
+        }
         // retrieve state if not null
-        if (savedInstanceState != null) {
+        else if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
 
         } else {
-            //TODO: leave commented out, for testing only
-          Intent intent = new Intent(this, SignInActivity.class);
-          startActivityForResult(intent, SIGN_IN_REQUEST);
-//            mUser = mDbUtils.getUser("akanksha@wlu.ca"); //for testing
-//            startPlacePickerAPI();
+            // start log in activity
+            Intent intent = new Intent(this, SignInActivity.class);
+            startActivityForResult(intent, SIGN_IN_REQUEST);
         }
 
         mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -79,7 +95,30 @@ public class MainActivity extends AppCompatActivity
 
         configureUberSDK();
 
+        mLogOutButton = findViewById(R.id.log_out_button);
+        mLogOutButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Start the Sign up activity
+                logOut();
+            }
+        });
+
     } // onCreate
+
+    private void logOut() {
+        Toast.makeText(this, "See you soon, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
+        mUser = null;
+        mDbUtils = null;
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.remove(ARG_SESSION_EXISTS);
+        editor.commit();
+
+        // start log in activity
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivityForResult(intent, SIGN_IN_REQUEST);
+    }
 
     private void startPlacePickerAPI() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();

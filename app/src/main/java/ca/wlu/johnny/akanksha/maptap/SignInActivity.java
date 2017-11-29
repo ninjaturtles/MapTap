@@ -4,6 +4,7 @@ package ca.wlu.johnny.akanksha.maptap;
  * Created by Akanksha on 2017-11-20.
  */
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,6 +36,7 @@ import butterknife.InjectView;
 
 public class SignInActivity extends AppCompatActivity {
 
+    private static final String ARG_SESSION_EXISTS = "ca.wlu.johnny.akanksha.maptap.sessionExists";
     private static final String GENERIC_PASSWORD = "ABC123YX";
     private static final String TAG = "SignInActivity";
     private static final int REQUEST_SIGNUP = 0;
@@ -230,6 +232,12 @@ public class SignInActivity extends AppCompatActivity {
         resultIntent.putExtra("email", mUser.getEmail());
 
         setResult(RESULT_OK, resultIntent);
+
+        // store session preference
+        SharedPreferences.Editor editor = MainActivity.sharedpreferences.edit();
+        editor.putString(ARG_SESSION_EXISTS, mUser.getEmail());
+        editor.commit();
+
         finish();
     }
 
