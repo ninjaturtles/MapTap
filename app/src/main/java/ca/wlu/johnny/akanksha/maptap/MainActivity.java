@@ -76,9 +76,9 @@ public class MainActivity extends AppCompatActivity
             mUser = mDbUtils.getUser(userEmail);
             startPlacePickerAPI();
             Toast.makeText(this, "Welcome back, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
-        }
-        // retrieve state if not null
-        else if (savedInstanceState != null) {
+
+        } else if (savedInstanceState != null) {
+            // retrieve state if not null
             onRestoreInstanceState(savedInstanceState);
 
         } else {
@@ -87,38 +87,21 @@ public class MainActivity extends AppCompatActivity
             startActivityForResult(intent, SIGN_IN_REQUEST);
         }
 
-        mLocationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        // setup location manager
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        // fetch user location if user is not null
         if (mUser != null) {
             getLocation();
         }
 
+        // setup uber request a ride api
         configureUberSDK();
 
-        mLogOutButton = findViewById(R.id.log_out_button);
-        mLogOutButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // Start the Sign up activity
-                logOut();
-            }
-        });
+        // setup logout button
+        setupLogOutButton();
 
     } // onCreate
-
-    private void logOut() {
-        Toast.makeText(this, "See you soon, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
-        mUser = null;
-        mDbUtils = null;
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.remove(ARG_SESSION_EXISTS);
-        editor.commit();
-
-        // start log in activity
-        Intent intent = new Intent(this, SignInActivity.class);
-        startActivityForResult(intent, SIGN_IN_REQUEST);
-    }
 
     private void startPlacePickerAPI() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
@@ -317,6 +300,31 @@ public class MainActivity extends AppCompatActivity
                 getLocation();
                 break;
         }
+    }
+
+    private void setupLogOutButton() {
+        mLogOutButton = findViewById(R.id.log_out_button);
+        mLogOutButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Start the Sign up activity
+                logOut();
+            }
+        });
+    }
+
+    private void logOut() {
+        Toast.makeText(this, "See you soon, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
+        mUser = null;
+        mDbUtils = null;
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.remove(ARG_SESSION_EXISTS);
+        editor.commit();
+
+        // start log in activity
+        Intent intent = new Intent(this, SignInActivity.class);
+        startActivityForResult(intent, SIGN_IN_REQUEST);
     }
 
 } // MainActivity
