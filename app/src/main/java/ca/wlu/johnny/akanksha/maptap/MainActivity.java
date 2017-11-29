@@ -10,12 +10,13 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.core.auth.Scope;
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         String userEmail = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
 
         // if session exists, no need to login again
-        if (userEmail != null) {
+        if (userEmail != null && savedInstanceState == null) {
             mUser = mDbUtils.getUser(userEmail);
             startPlacePickerAPI();
             Toast.makeText(this, "Welcome back, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
@@ -100,9 +102,6 @@ public class MainActivity extends AppCompatActivity
 
         // setup uber request a ride api
         configureUberSDK();
-
-        // setup logout button
-        setupLogOutButton();
 
     } // onCreate
 
@@ -158,6 +157,9 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.action_settings:
                 //TODO: settings menu here
+                return true;
+            case R.id.actions_log_out:
+                logOut();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -305,18 +307,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setupLogOutButton() {
-        mLogOutButton = findViewById(R.id.log_out_button);
-        mLogOutButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // Start the Sign up activity
-                logOut();
-            }
-        });
-    }
-
     private void logOut() {
         Toast.makeText(this, "See you soon, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
         mUser = null;
@@ -327,10 +317,24 @@ public class MainActivity extends AppCompatActivity
         editor.remove(ARG_SESSION_EXISTS);
         editor.commit();
 
+//        destroyFragments();
+
         // start log in activity
         Intent intent = new Intent(this, SignInActivity.class);
         startActivityForResult(intent, SIGN_IN_REQUEST);
     }
+
+//    public void destroyFragments() {
+//        // TODO Auto-generated method stub
+//
+//        FragmentManager manager = getSupportFragmentManager();
+//        List<Fragment> fragments = manager.getFragments();
+//        FragmentTransaction trans = manager.beginTransaction();
+//        for (Fragment fragment : fragments) {
+//            trans.remove(fragment);
+//        }
+//        trans.commit();
+//    }
 
     private void disconnectFromFacebook() {
 
