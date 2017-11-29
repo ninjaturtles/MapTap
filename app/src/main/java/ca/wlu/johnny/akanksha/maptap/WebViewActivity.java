@@ -69,7 +69,7 @@ public class WebViewActivity extends AppCompatActivity
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_settings:
+            case R.id.action_profile:
                 //TODO: settings menu here
                 return true;
             default:

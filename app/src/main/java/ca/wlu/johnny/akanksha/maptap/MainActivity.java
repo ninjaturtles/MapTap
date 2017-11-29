@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity
     private SelectedPlace mSelectedPlace;
     private User mUser;
     private DbUtils mDbUtils;
-    private Button mLogOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,8 +154,9 @@ public class MainActivity extends AppCompatActivity
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_settings:
-                //TODO: settings menu here
+            case R.id.action_profile:
+                Intent intent = new Intent(this, UserProfileActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.actions_log_out:
                 logOut();
@@ -322,10 +322,9 @@ public class MainActivity extends AppCompatActivity
         // start log in activity
         Intent intent = new Intent(this, SignInActivity.class);
         startActivityForResult(intent, SIGN_IN_REQUEST);
-    }
+    } // logOut
 
 //    public void destroyFragments() {
-//        // TODO Auto-generated method stub
 //
 //        FragmentManager manager = getSupportFragmentManager();
 //        List<Fragment> fragments = manager.getFragments();
@@ -343,5 +342,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         LoginManager.getInstance().logOut();
-    }
+    } // disconnectFromFacebook
+
 } // MainActivity
