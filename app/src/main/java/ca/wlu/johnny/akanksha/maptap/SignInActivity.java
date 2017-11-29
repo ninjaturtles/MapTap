@@ -35,7 +35,7 @@ import butterknife.InjectView;
 
 public class SignInActivity extends AppCompatActivity {
 
-    private static final String GENERIC_PASSWORD = "ABC123!@#ZYX987*&^";
+    private static final String GENERIC_PASSWORD = "ABC123YX";
     private static final String TAG = "SignInActivity";
     private static final int REQUEST_SIGNUP = 0;
     private CallbackManager mCallbackManager;
@@ -66,11 +66,26 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+        facebookLoginAuxuliry();
+
+        signupLink.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Start the Sign up activity
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+                startActivityForResult(intent, REQUEST_SIGNUP);
+            }
+        });
+    }
+
+    private void facebookLoginAuxuliry() {
         mCallbackManager = CallbackManager.Factory.create();
 
         mLoginButton = (LoginButton)findViewById(R.id.login_button);
         mLoginButton.setReadPermissions(Arrays.asList("email"));
         mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+
             @Override
             public void onSuccess(LoginResult loginResult) {
 
@@ -80,18 +95,18 @@ public class SignInActivity extends AppCompatActivity {
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(),
                         new GraphRequest.GraphJSONObjectCallback() {
 
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.i("LoginActivity", response.toString());
-                        // Get facebook data from login
-                        Bundle bFacebookData = getFacebookData(object);
-                      if(!isAlreadyRegistered(bFacebookData.getString("email"))){
-                          createNewUserAccount(bFacebookData);
-                      }
-                        // On complete call onSignInSuccess()
-                        onSignInSuccess();
-                    }
-                });
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                Log.i("LoginActivity", response.toString());
+                                // Get facebook data from login
+                                Bundle bFacebookData = getFacebookData(object);
+                                if(!isAlreadyRegistered(bFacebookData.getString("email"))){
+                                    createNewUserAccount(bFacebookData);
+                                }
+                                // On complete call onSignInSuccess()
+                                onSignInSuccess();
+                            }
+                        });
 
                 Bundle parameters = new Bundle();
                 parameters.putString("fields", "id, first_name, last_name, email");
@@ -101,22 +116,12 @@ public class SignInActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-
+                // left empty intentionally
             }
 
             @Override
             public void onError(FacebookException e) {
-//                info.setText("Login attempt failed.");
-            }
-        });
-
-        signupLink.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // Start the Sign up activity
-                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
-                startActivityForResult(intent, REQUEST_SIGNUP);
+                // left empty intentionally
             }
         });
     }
