@@ -46,36 +46,35 @@
 
     <LinearLayout
 
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:orientation="horizontal"
         android:weightSum="1">
 
-        <TextView
+        <ImageView
             android:id="@+id/call_icon"
             android:layout_width="0dp"
             android:layout_height="50dp"
+            android:layout_weight="0.33"
             android:padding="10dp"
-            android:text="Call"
-
-            android:layout_weight="0.33"/>
+            android:src="@drawable/ic_action_call" />
 
         <TextView
             android:id="@+id/website_icon"
             android:layout_width="0dp"
-            android:text="Website"
             android:layout_height="50dp"
+            android:layout_weight="0.33"
             android:padding="10dp"
-            android:layout_weight="0.33"/>
+            android:text="Website" />
 
 
         <TextView
             android:id="@+id/directions_icon"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:text="Directions"
+            android:layout_weight="0.33"
             android:padding="10dp"
-            android:layout_weight="0.33"/>
+            android:text="Directions" />
 
     </LinearLayout>
 

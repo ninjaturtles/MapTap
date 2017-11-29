@@ -54,7 +54,7 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mPlacePriceTextView;
     private ImageView mPlaceImageView;
     private TextView mDirectionsTextView;
-    private TextView mCallTextView;
+    private ImageView mCallImageView;
     private TextView mPlaceWebsiteIcon;
     private RatingBar mRating;
     private RideRequestButton mUberRidesButton;
@@ -175,7 +175,7 @@ public class PlaceDetailsFragment extends Fragment {
             return;
         }
 
-        mCallTextView.setOnClickListener(new View.OnClickListener() {
+        mCallImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -211,7 +211,7 @@ public class PlaceDetailsFragment extends Fragment {
         mPlaceImageView = v.findViewById(R.id.place_image);
         mPlaceWebsiteIcon = v.findViewById(R.id.website_icon);
         mDirectionsTextView = v.findViewById(R.id.directions_icon);
-        mCallTextView = v.findViewById(R.id.call_icon);
+        mCallImageView = v.findViewById(R.id.call_icon);
         mRating = v.findViewById(R.id.rating);
     } // setViews
 
