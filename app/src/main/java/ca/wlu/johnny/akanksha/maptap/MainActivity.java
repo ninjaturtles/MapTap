@@ -19,6 +19,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
+
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
@@ -317,7 +320,9 @@ public class MainActivity extends AppCompatActivity
     private void logOut() {
         Toast.makeText(this, "See you soon, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
         mUser = null;
-        mDbUtils = null;
+
+        disconnectFromFacebook();
+
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.remove(ARG_SESSION_EXISTS);
         editor.commit();
@@ -327,4 +332,12 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(intent, SIGN_IN_REQUEST);
     }
 
+    private void disconnectFromFacebook() {
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            return; // already logged out
+        }
+
+        LoginManager.getInstance().logOut();
+    }
 } // MainActivity

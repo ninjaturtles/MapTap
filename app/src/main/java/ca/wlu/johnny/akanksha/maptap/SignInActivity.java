@@ -68,7 +68,7 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
-        facebookLoginAuxuliry();
+        facebookLoginAuxiliary();
 
         signupLink.setOnClickListener(new View.OnClickListener() {
 
@@ -81,10 +81,10 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    private void facebookLoginAuxuliry() {
+    private void facebookLoginAuxiliary() {
         mCallbackManager = CallbackManager.Factory.create();
 
-        mLoginButton = (LoginButton)findViewById(R.id.login_button);
+        mLoginButton = (LoginButton) findViewById(R.id.login_button);
         mLoginButton.setReadPermissions(Arrays.asList("email"));
         mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
 
