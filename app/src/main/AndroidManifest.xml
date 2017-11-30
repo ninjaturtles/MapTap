@@ -33,8 +33,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SignInActivity" android:theme="@style/AppTheme" />
-        <activity android:name=".SignUpActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".SignInActivity" android:theme="@style/AppTheme"
+                  android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".SignUpActivity" android:theme="@style/AppTheme"
+                  android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".UserProfileActivity" android:theme="@style/AppTheme"
             android:parentActivityName="ca.wlu.johnny.akanksha.maptap.MainActivity">

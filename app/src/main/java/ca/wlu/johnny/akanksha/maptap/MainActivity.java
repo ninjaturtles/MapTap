@@ -219,7 +219,9 @@ public class MainActivity extends AppCompatActivity
         String id = place.getId();
         String name = place.getName().toString();
         String address = place.getAddress().toString();
-        String phoneNumber = (place.getPhoneNumber() == null) ? "N/A" : place.getPhoneNumber().toString();
+        String phoneNumber = (place.getPhoneNumber() == null) ? "N/A"
+                : (place.getPhoneNumber().equals("")) ? "N/A"
+                : place.getPhoneNumber().toString();
         String url = (place.getWebsiteUri() == null) ? "N/A" : place.getWebsiteUri().toString();
         String latLng = place.getLatLng().toString();
         String type = getPlaceType(place.getPlaceTypes().get(0));

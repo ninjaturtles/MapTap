@@ -53,9 +53,9 @@ public class PlaceDetailsFragment extends Fragment {
     private TextView mPlaceTypeTextView;
     private TextView mPlacePriceTextView;
     private ImageView mPlaceImageView;
-    private TextView mDirectionsTextView;
+    private ImageView mDirectionsImageView;
     private ImageView mCallImageView;
-    private TextView mPlaceWebsiteIcon;
+    private ImageView mPlaceWebsiteIcon;
     private RatingBar mRating;
     private RideRequestButton mUberRidesButton;
     private GeoDataClient mGeoDataClient;
@@ -157,7 +157,7 @@ public class PlaceDetailsFragment extends Fragment {
 
     //opens google nav on click
     private void onDirectionsClick() {
-        mDirectionsTextView.setOnClickListener(new View.OnClickListener() {
+        mDirectionsImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Uri gmmIntentUri = Uri.parse("google.navigation:q="+mPlace.getAddress()+"");
@@ -171,13 +171,14 @@ public class PlaceDetailsFragment extends Fragment {
     //opens call
     private void onCallClick() {
         // unclickable if place has no number
-        if (mPlace.getPhoneNumber().equals("N/A")) {
-            return;
-        }
-
         mCallImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(mPlace.getPhoneNumber().equals("N/A")) {
+                    Toast.makeText(getActivity(),"No phone number",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 Intent intent = new Intent(Intent.ACTION_DIAL);
                 intent.setData(Uri.parse("tel:"+mPlace.getPhoneNumber()));
                 startActivity(intent);
@@ -187,12 +188,13 @@ public class PlaceDetailsFragment extends Fragment {
 
     private void onWebsiteClick() {
         // unclickable if place has no url
-        if (mPlace.getUrl().equals("N/A")) {
-            return;
-        }
-
         mPlaceWebsiteIcon.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                if (mPlace.getUrl().equals("N/A")) {
+                    Toast.makeText(getActivity(),"No Website",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (isNetworkAvailable()) {
                     Intent webViewIntent = WebViewActivity.newIntent(getActivity(), mPlace.getUrl());
                     startActivity(webViewIntent);
@@ -210,7 +212,7 @@ public class PlaceDetailsFragment extends Fragment {
         mPlacePriceTextView = v.findViewById(R.id.place_price_text_view);
         mPlaceImageView = v.findViewById(R.id.place_image);
         mPlaceWebsiteIcon = v.findViewById(R.id.website_icon);
-        mDirectionsTextView = v.findViewById(R.id.directions_icon);
+        mDirectionsImageView = v.findViewById(R.id.directions_icon);
         mCallImageView = v.findViewById(R.id.call_icon);
         mRating = v.findViewById(R.id.rating);
     } // setViews

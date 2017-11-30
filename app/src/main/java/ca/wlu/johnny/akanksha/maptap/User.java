@@ -28,11 +28,11 @@ public class User implements Parcelable {
         this(UUID.randomUUID(), myName, myEmail, myPassword);
     }
 
-    public User(UUID id, String theImage, String theQuestion, String theAnswer){
+    public User(UUID id, String theName, String theEmail, String thePassword){
         mId = id;
-        mName = theImage;
-        mEmail = theQuestion;
-        mPassword = theAnswer;
+        mName = theName;
+        mEmail = theEmail;
+        mPassword = thePassword;
     }
 
     public User(Parcel in){
