@@ -33,11 +33,11 @@ public class UserBaseHelper extends SQLiteOpenHelper {
                 UserTable.Cols.PASSWORD + " )");
 
         // add testing users
-        User user = new User("johnny", "johnny@wlu.ca", "jk123456");
+        User user = new User("Johnny Khalil", "johnny@wlu.ca", "jk123456");
         ContentValues userValues = getUserValues(user);
         db.insert(UserTable.NAME, null, userValues);
 
-        user = new User("akanksha", "akanksha@wlu.ca", "am123456");
+        user = new User("Akanksha Malik", "akanksha@wlu.ca", "am123456");
         userValues = getUserValues(user);
         db.insert(UserTable.NAME, null, userValues);
     }

@@ -155,8 +155,8 @@ public class MainActivity extends AppCompatActivity
                 onBackPressed();
                 return true;
             case R.id.action_profile:
-                Intent intent = new Intent(this, UserProfileActivity.class);
-                startActivity(intent);
+                Intent userProfileIntent = UserProfileActivity.newIntent(this, mUser.getEmail());
+                startActivity(userProfileIntent);
                 return true;
             case R.id.actions_log_out:
                 logOut();
