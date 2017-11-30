@@ -2,8 +2,10 @@ package ca.wlu.johnny.akanksha.maptap;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +19,16 @@ import ca.wlu.johnny.akanksha.maptap.database.UserDbSchema.UserTable;
 
 public class DbUtils {
 
+    private static final String ARG_SESSION_EXISTS = "ca.wlu.johnny.akanksha.maptap.sessionExists";
+
     private static DbUtils sDbUtils;
     private Context mContext;
     private SQLiteDatabase mDatabase;
 
     public static DbUtils get(Context context) {
         if (sDbUtils == null) {
-            sDbUtils = new DbUtils(context);
-        }
+        sDbUtils = new DbUtils(context);
+    }
         return sDbUtils;
     }
 
@@ -51,7 +55,21 @@ public class DbUtils {
         }
     }
 
-    public int deleteCard(String email) {
+    public void updateEmail(String newEmail, User user){
+
+        mDatabase.execSQL("UPDATE "+ UserTable.NAME + " SET " + UserTable.Cols.EMAIL + "='"+newEmail +
+                "' WHERE email='"+user.getEmail()+"'");
+
+        user.setEmail(newEmail);
+
+        // update session preference
+        SharedPreferences.Editor editor = MainActivity.sharedpreferences.edit();
+        editor.putString(ARG_SESSION_EXISTS, newEmail);
+        editor.commit();
+
+    }
+
+    public int deleteUser(String email) {
         int status = -1;
 
         try {
@@ -90,4 +108,4 @@ public class DbUtils {
         values.put(UserTable.Cols.PASSWORD, user.getPassword());
         return values;
     }
-}
+}//DbUtils

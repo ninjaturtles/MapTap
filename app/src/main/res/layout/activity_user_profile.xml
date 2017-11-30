@@ -46,15 +46,6 @@
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/user_profile_short_bio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_profile_name"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="12dp"
-                android:textColor="@color/white"
-                android:textSize="14sp" />
         </RelativeLayout>
 
         <LinearLayout
@@ -64,7 +55,8 @@
             android:layout_marginTop="5dp"
             android:orientation="vertical">
 
-            <EditText
+            <TextView
+                android:id="@+id/user_email"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -75,6 +67,7 @@
                 android:hint="Edit email"/>
 
             <TextView
+                android:id="@+id/user_pw"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -86,6 +79,16 @@
                 android:padding="20dp"
                 android:hint="Change password" />
 
+            <ImageButton
+                android:id="@+id/save_button"
+                android:backgroundTint="@color/colorPrimary"
+                android:layout_gravity="right"
+                android:src="@drawable/ic_action_save"
+                android:layout_below="@+id/user_pw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
         </LinearLayout>
+
     </RelativeLayout>
 </ScrollView>

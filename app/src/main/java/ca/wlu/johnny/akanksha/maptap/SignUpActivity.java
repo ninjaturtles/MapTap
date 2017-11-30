@@ -88,7 +88,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void onSignUpSuccess() {
-        Toast.makeText(getBaseContext(), "Sign up successfully", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Sign up successfully", Toast.LENGTH_SHORT).show();
 
         signupButton.setEnabled(true);
 
@@ -100,13 +100,13 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void onSignUpFailed() {
-        Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Sign up failed", Toast.LENGTH_SHORT).show();
 
         signupButton.setEnabled(true);
     }
 
     public void onUserAlreadyExists() {
-        Toast.makeText(getBaseContext(), "Email already exists", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Email already exists", Toast.LENGTH_SHORT).show();
 
         signupButton.setEnabled(true);
     }
@@ -152,5 +152,4 @@ public class SignUpActivity extends AppCompatActivity {
 
         return valid;
     }
-}
-
+}// SignUpActivity

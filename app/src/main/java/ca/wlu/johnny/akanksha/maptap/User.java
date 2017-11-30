@@ -108,5 +108,8 @@ public class User implements Parcelable {
     public void setLng(double myLng) {
         this.mLng = myLng;
     }
-}
 
+    public void setEmail(String newEmail) {
+        this.mEmail = newEmail;
+    }
+}// User

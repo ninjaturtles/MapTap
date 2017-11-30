@@ -136,4 +136,4 @@ public class WebViewActivity extends AppCompatActivity
         // system behavior (probably exit the activity)
         return super.onKeyDown(keyCode, event);
     }
-}
+}//WebViewActivity

@@ -45,10 +45,12 @@ public class MainActivity extends AppCompatActivity
     private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
     private static final String ARG_SHARED_PREFERENCE = "ca.wlu.johnny.akanksha.maptap.sharedPerefernce";
     private static final String ARG_SESSION_EXISTS = "ca.wlu.johnny.akanksha.maptap.sessionExists";
+
     private static final int SIGN_IN_REQUEST = 0;
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final int REQUEST_LOCATION = 2;
     private static final int SHARED_PREFERENCE_REQUEST = 3;
+    private static final int PROFILE_REQUEST = 4;
 
     // global variables
     protected static SessionConfiguration config;
@@ -76,10 +78,9 @@ public class MainActivity extends AppCompatActivity
         String userEmail = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
 
         // if session exists, no need to login again
-        if (userEmail != null && savedInstanceState == null) {
+        if (userEmail != null) {
             mUser = mDbUtils.getUser(userEmail);
             startPlacePickerAPI();
-            Toast.makeText(this, "Welcome back, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
 
         } else if (savedInstanceState != null) {
             // retrieve state if not null
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.action_profile:
                 Intent userProfileIntent = UserProfileActivity.newIntent(this, mUser.getEmail());
-                startActivity(userProfileIntent);
+                startActivityForResult(userProfileIntent,PROFILE_REQUEST);
                 return true;
             case R.id.actions_log_out:
                 logOut();
@@ -180,6 +181,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == SIGN_IN_REQUEST) {
 
@@ -190,6 +192,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         else if (requestCode == PLACE_PICKER_REQUEST) {
+
+            String email = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
+            mUser = mDbUtils.getUser(email);
+            System.out.println(mUser);
+
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(this, data);
 
@@ -212,6 +219,13 @@ public class MainActivity extends AppCompatActivity
                             .commitAllowingStateLoss();
                 }
             }
+        }
+
+        else if (requestCode == PROFILE_REQUEST) {
+            String email = data.getStringExtra("email");
+            mUser = mDbUtils.getUser(email);
+            getLocation();
+            startPlacePickerAPI();
         }
     } // onActivityResult
 
