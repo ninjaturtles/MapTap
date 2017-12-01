@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private SelectedPlace mSelectedPlace;
     private User mUser;
     private DbUtils mDbUtils;
+    private Button mLaunchPlacePickerButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity
         String userEmail = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
 
         // if session exists, no need to login again
-        if (userEmail != null) {
+        if (userEmail != null && savedInstanceState == null) {
             mUser = mDbUtils.getUser(userEmail);
             startPlacePickerAPI();
 
@@ -99,12 +103,36 @@ public class MainActivity extends AppCompatActivity
         // setup uber request a ride api
         configureUberSDK();
 
+        setupLaunchPlacePickerButton();
+
     } // onCreate
+
+    private void displayLaunchPlacePicker() {
+        mLaunchPlacePickerButton.setVisibility(View.VISIBLE);
+    }
+
+    private void undisplayLaunchPlacePicker() {
+        mLaunchPlacePickerButton.setVisibility(View.GONE);
+    }
+
+    private void setupLaunchPlacePickerButton() {
+
+        mLaunchPlacePickerButton = findViewById(R.id.launch_place_picker_button);
+        mLaunchPlacePickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startPlacePickerAPI();
+            }
+        });
+
+        mLaunchPlacePickerButton.setVisibility(View.VISIBLE);
+    }
 
     private void startPlacePickerAPI() {
         PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
         try {
+
             Intent placePickerIntent = builder.build(this);
             startActivityForResult(placePickerIntent, PLACE_PICKER_REQUEST);
 
@@ -179,6 +207,8 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        displayLaunchPlacePicker();
+
         if (requestCode == SIGN_IN_REQUEST) {
 
             String email = data.getStringExtra("email");
@@ -212,6 +242,8 @@ public class MainActivity extends AppCompatActivity
                     fm.beginTransaction().add(R.id.fragment_container, fragment)
                             .addToBackStack(FRAGMENT_PLACE_DETAILS)
                             .commitAllowingStateLoss();
+
+                    undisplayLaunchPlacePicker();
                 }
             }
         }
