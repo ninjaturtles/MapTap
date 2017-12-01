@@ -3,7 +3,6 @@ package ca.wlu.johnny.akanksha.maptap;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -43,9 +42,9 @@ public class WebViewActivity extends AppCompatActivity
 
         mURL = getIntent().getStringExtra(EXTRA_PLACE);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar = findViewById(R.id.progressBar);
         mProgressBar.setMax(100); // WebChromeClient reports in range 0-100
-        mTitleTextView = (TextView) findViewById(R.id.titleTextView);
+        mTitleTextView = findViewById(R.id.titleTextView);
 
         setupWebView();
 
@@ -91,7 +90,7 @@ public class WebViewActivity extends AppCompatActivity
 
     public void setupWebView() {
 
-        mWebView = (WebView) findViewById(R.id.webview);
+        mWebView = findViewById(R.id.webview);
 
         // display the whole webpage in the window
         mWebView.getSettings().setLoadWithOverviewMode(true);

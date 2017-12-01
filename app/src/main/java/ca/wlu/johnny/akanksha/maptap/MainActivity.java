@@ -10,14 +10,11 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -31,7 +28,6 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
 
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.core.auth.Scope;
@@ -195,7 +191,6 @@ public class MainActivity extends AppCompatActivity
 
             String email = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
             mUser = mDbUtils.getUser(email);
-            System.out.println(mUser);
 
             if (resultCode == RESULT_OK) {
                 Place place = PlacePicker.getPlace(this, data);
@@ -222,10 +217,15 @@ public class MainActivity extends AppCompatActivity
         }
 
         else if (requestCode == PROFILE_REQUEST) {
-            String email = data.getStringExtra("email");
-            mUser = mDbUtils.getUser(email);
-            getLocation();
-            startPlacePickerAPI();
+            if (resultCode == RESULT_OK) {
+                String email = data.getStringExtra("email");
+                mUser = mDbUtils.getUser(email);
+                getLocation();
+                startPlacePickerAPI();
+            }else{
+                String email = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
+                mUser = mDbUtils.getUser(email);
+            }
         }
     } // onActivityResult
 
@@ -333,23 +333,13 @@ public class MainActivity extends AppCompatActivity
         editor.remove(ARG_SESSION_EXISTS);
         editor.commit();
 
-//        destroyFragments();
-
         // start log in activity
         Intent intent = new Intent(this, SignInActivity.class);
         startActivityForResult(intent, SIGN_IN_REQUEST);
+
+        getSupportFragmentManager().popBackStack();
     } // logOut
 
-//    public void destroyFragments() {
-//
-//        FragmentManager manager = getSupportFragmentManager();
-//        List<Fragment> fragments = manager.getFragments();
-//        FragmentTransaction trans = manager.beginTransaction();
-//        for (Fragment fragment : fragments) {
-//            trans.remove(fragment);
-//        }
-//        trans.commit();
-//    }
 
     private void disconnectFromFacebook() {
 

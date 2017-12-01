@@ -47,6 +47,4 @@ dependencies {
     compile 'com.facebook.android:facebook-login:[4,5)'
     compile 'com.twilio:client-android:1.2.21'
     testCompile 'junit:junit:4.12'
-    compile 'com.github.bumptech.glide:glide:4.3.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
 }

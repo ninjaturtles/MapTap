@@ -6,13 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -20,19 +17,15 @@ import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import static ca.wlu.johnny.akanksha.maptap.MainActivity.sharedpreferences;
@@ -44,7 +37,6 @@ import static ca.wlu.johnny.akanksha.maptap.MainActivity.sharedpreferences;
 public class UserProfileActivity extends AppCompatActivity {
 
     private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
-    private static final String ARG_PROFILE_PHOTO_FILE_PATH  = "ca.wlu.johnny.akanksha.maptap.PROFILE_PHOTO_FILE_PATH";
     private static final String EXTRA_USER = "ca.wlu.johnny.akanksha.maptap.userEmail";
     private static final String ARG_SESSION_EXISTS = "ca.wlu.johnny.akanksha.maptap.sessionExists";
 
@@ -177,7 +169,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
             Bitmap croppedBitmap = PictureUtils.getCircularBitmap(rotateBitmap);
 
-            Glide.with(this).load(croppedBitmap).into(mPhotoView);
+            mPhotoView.setImageBitmap(croppedBitmap);
         }
     }
 
@@ -277,6 +269,7 @@ public class UserProfileActivity extends AppCompatActivity {
         mUser = null;
 
         disconnectFromFacebook();
+        setResult(RESULT_CANCELED);
 
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.remove(ARG_SESSION_EXISTS);
