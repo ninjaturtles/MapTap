@@ -101,6 +101,10 @@ public class User implements Parcelable {
         return mLng;
     }
 
+    public String getPhotoFilename() {
+        return "IMG_" + getId().toString() + ".jpg";
+    }
+
     public void setLat(double myLat) {
         this.mLat = myLat;
     }

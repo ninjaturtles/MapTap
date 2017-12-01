@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +107,11 @@ public class DbUtils {
     private UserCursorWrapper queryUsers(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(UserTable.NAME, null, whereClause, whereArgs, null, null, null);
         return new UserCursorWrapper(cursor);
+    }
+
+    public File getPhotoFile(User user) {
+        File filesDir = mContext.getFilesDir();
+        return new File(filesDir, user.getPhotoFilename());
     }
 
     private static ContentValues getUserValues(User user) {
