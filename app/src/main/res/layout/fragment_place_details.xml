@@ -106,6 +106,18 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             uber:ub__style="black"/>
+
+        <Button
+            android:id="@+id/add_to_favorite_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="ADD TO FAVORITE"
+            android:layout_below="@id/uber_icon"
+            android:background="@color/colorPrimary"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
 
 </ScrollView>

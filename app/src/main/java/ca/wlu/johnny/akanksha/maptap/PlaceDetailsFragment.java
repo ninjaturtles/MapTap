@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -47,6 +48,7 @@ public class PlaceDetailsFragment extends Fragment {
     private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
 
     private SelectedPlace mPlace;
+    private DbUtils mDbUtils;
     private User mUser;
     private Resources res;
     private TextView mPlaceNameTextView;
@@ -59,6 +61,7 @@ public class PlaceDetailsFragment extends Fragment {
     private RatingBar mRating;
     private RideRequestButton mUberRidesButton;
     private GeoDataClient mGeoDataClient;
+    private Button mAddToFavoriteButton;
 
     public static PlaceDetailsFragment newInstance(SelectedPlace place, User user){
         Bundle args = new Bundle();
@@ -74,6 +77,8 @@ public class PlaceDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mDbUtils = DbUtils.get(getContext());
 
         mGeoDataClient = Places.getGeoDataClient(getActivity(), null);
         res = getResources();
@@ -101,6 +106,7 @@ public class PlaceDetailsFragment extends Fragment {
         onCallClick();
         onUberClick(view);
         onWebsiteClick();
+        onAddToFavoriteClick();
         getPhotos(mPlace.getId());
 
         updateUI();
@@ -117,6 +123,21 @@ public class PlaceDetailsFragment extends Fragment {
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     } // ActionBar
+
+
+    private void onAddToFavoriteClick() {
+        mAddToFavoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDbUtils.addPlace(mPlace);
+                onAddedToFavorite();
+            }
+        });
+    }
+
+    private void onAddedToFavorite() {
+        Toast.makeText(getActivity(),"Added to Favorite",Toast.LENGTH_SHORT).show();
+    }
 
     private void onUberClick(View v) {
 
@@ -215,6 +236,8 @@ public class PlaceDetailsFragment extends Fragment {
         mDirectionsImageView = v.findViewById(R.id.directions_icon);
         mCallImageView = v.findViewById(R.id.call_icon);
         mRating = v.findViewById(R.id.rating);
+        mAddToFavoriteButton = v.findViewById(R.id.add_to_favorite_button);
+
     } // setViews
 
     private void updateUI() {

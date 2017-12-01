@@ -5,19 +5,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -31,6 +39,7 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.core.auth.Scope;
@@ -59,6 +68,9 @@ public class MainActivity extends AppCompatActivity
     private User mUser;
     private DbUtils mDbUtils;
     private Button mLaunchPlacePickerButton;
+    private TextView mFavPlacesLabel;
+    private RecyclerView mFavPlacesRecyclerView;
+    private FavouritePlacesAdapter mFavPlacesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +79,13 @@ public class MainActivity extends AppCompatActivity
 
         //Listen for changes in the back stack
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-        //Handle when activity is recreated like on orientation Change
-        shouldDisplayHomeUp();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (NavUtils.getParentActivityName(this) != null) {
+                // Handle when activity is recreated like on orientation Change
+                shouldDisplayHomeUp();
+            }
+        }
 
         // setup database connection
         mDbUtils = DbUtils.get(this);
@@ -103,19 +120,44 @@ public class MainActivity extends AppCompatActivity
         // setup uber request a ride api
         configureUberSDK();
 
-        setupLaunchPlacePickerButton();
+        setupMainAvtivityWedgits();
+
+        // fetch user location if user is not null
+        if (mUser != null) {
+            List<SelectedPlace> places = mDbUtils.getPlaces(mUser.getEmail());
+
+            if (mFavPlacesAdapter == null) {
+                mFavPlacesAdapter = new FavouritePlacesAdapter(places);
+                mFavPlacesRecyclerView.setAdapter(mFavPlacesAdapter);
+
+            } else {
+
+                mFavPlacesAdapter.setPlaces(places);
+                mFavPlacesAdapter.notifyDataSetChanged();
+            }
+        }
 
     } // onCreate
 
-    private void displayLaunchPlacePicker() {
+    private void displayAvtivityWedgits () {
         mLaunchPlacePickerButton.setVisibility(View.VISIBLE);
+        mFavPlacesRecyclerView.setAlpha(1);
+        mFavPlacesLabel.setVisibility(View.VISIBLE);
     }
 
-    private void undisplayLaunchPlacePicker() {
+    private void undisplayAvtivityWedgits() {
+
+        mFavPlacesRecyclerView.setAlpha(0);
         mLaunchPlacePickerButton.setVisibility(View.GONE);
+        mFavPlacesLabel.setVisibility(View.GONE);
+
     }
 
-    private void setupLaunchPlacePickerButton() {
+    private void setupMainAvtivityWedgits() {
+
+        mFavPlacesRecyclerView = findViewById(R.id.fav_place_recycler_view);
+        mFavPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mFavPlacesLabel = findViewById(R.id.fav_place_label);
 
         mLaunchPlacePickerButton = findViewById(R.id.launch_place_picker_button);
         mLaunchPlacePickerButton.setOnClickListener(new View.OnClickListener() {
@@ -207,7 +249,7 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        displayLaunchPlacePicker();
+        displayAvtivityWedgits();
 
         if (requestCode == SIGN_IN_REQUEST) {
 
@@ -243,7 +285,7 @@ public class MainActivity extends AppCompatActivity
                             .addToBackStack(FRAGMENT_PLACE_DETAILS)
                             .commitAllowingStateLoss();
 
-                    undisplayLaunchPlacePicker();
+                    undisplayAvtivityWedgits();
                 }
             }
         }
@@ -274,7 +316,8 @@ public class MainActivity extends AppCompatActivity
         float rating = place.getRating();
         int price=place.getPriceLevel();
 
-        mSelectedPlace = new SelectedPlace(id, name, address, phoneNumber, url, latLng, type, price, rating);
+        mSelectedPlace = new SelectedPlace(id, name, address, phoneNumber, url,
+                latLng, type, price, rating, mUser.getEmail());
     }
 
     private String getPlaceType(int myPlaceType){
@@ -382,4 +425,86 @@ public class MainActivity extends AppCompatActivity
         LoginManager.getInstance().logOut();
     } // disconnectFromFacebook
 
+    private class FavouritePlacesAdapter extends RecyclerView.Adapter<FavouritePlacesHolder>{
+        private List<SelectedPlace> mPlaces;
+
+        public FavouritePlacesAdapter(List<SelectedPlace> places){
+            mPlaces = places;
+        }
+
+        @Override
+        public FavouritePlacesHolder onCreateViewHolder(ViewGroup parent, int viewType){
+            LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+            return new FavouritePlacesHolder(layoutInflater, parent);
+        }
+
+        @Override
+        public void onBindViewHolder(FavouritePlacesHolder holder, int position){
+            SelectedPlace selectedPlace = mPlaces.get(position);
+            holder.bind(selectedPlace);
+        }
+
+        @Override
+        public int getItemCount(){
+            return mPlaces.size();
+        }
+
+        public void setPlaces(List<SelectedPlace> places) {
+            mPlaces = places;
+        }
+
+    }
+
+    private class FavouritePlacesHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener{
+
+        private ImageView mImageView;
+        private TextView mFavPlaceAddressTextView;
+        private SelectedPlace mPlace;
+        private Resources res;
+
+        public FavouritePlacesHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.list_item_fav_place, parent, false));
+            itemView.setOnClickListener(this);
+
+//            res = getResources();
+//
+            mFavPlaceAddressTextView = itemView.findViewById(R.id.fav_place_address);
+//            mImageView = itemView.findViewById(R.id.image_view);
+        }
+
+        public void bind(SelectedPlace selectedPlace){
+            mPlace = selectedPlace;
+
+            updateImage();
+            updateQuestion();
+        }
+
+        private void updateImage() {
+//            String imageName = mPlace.getImage();
+//            int resourceId = res.getIdentifier(imageName, "drawable", MainActivity.this.getPackageName());
+//            mImageView.setImageResource(resourceId);
+        }
+
+        private void updateQuestion() {
+            String address = mPlace.getAddress();
+            mFavPlaceAddressTextView.setText(address);
+        }
+
+        @Override
+        public void onClick(View view){
+            FragmentManager fm = getSupportFragmentManager();
+            Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+
+            if (fragment == null) {
+
+                fragment = PlaceDetailsFragment.newInstance(mPlace, mUser);
+                fm.beginTransaction().add(R.id.fragment_container, fragment)
+                        .addToBackStack(FRAGMENT_PLACE_DETAILS)
+                        .commitAllowingStateLoss();
+
+                undisplayAvtivityWedgits();
+            }
+        }
+    }
 } // MainActivity

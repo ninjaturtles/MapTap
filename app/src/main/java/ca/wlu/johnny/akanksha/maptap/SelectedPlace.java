@@ -18,6 +18,7 @@ public class SelectedPlace implements Parcelable {
     private String mType;
     private int mPrice;
     private float mRating;
+    private String mUserEmail;
 
     @Override
     public int describeContents() {
@@ -27,7 +28,7 @@ public class SelectedPlace implements Parcelable {
 
     public SelectedPlace(String myId, String myName, String myAddress, String myPhoneNumber,
                          String myUrl, String myLatLng, String myType,
-                         int myPrice, float myRating){
+                         int myPrice, float myRating, String myUserEmail){
         mId = myId;
         mName = myName;
         mAddress = myAddress;
@@ -37,6 +38,7 @@ public class SelectedPlace implements Parcelable {
         mType = myType;
         mPrice = myPrice;
         mRating = myRating;
+        mUserEmail = myUserEmail;
     }
 
     public SelectedPlace(Parcel in){
@@ -49,6 +51,7 @@ public class SelectedPlace implements Parcelable {
         this.mType = in.readString();
         this.mPrice = in.readInt();
         this.mRating = in.readFloat();
+        this.mUserEmail = in.readString();
     }
 
     @Override
@@ -62,6 +65,7 @@ public class SelectedPlace implements Parcelable {
         dest.writeString(mType);
         dest.writeInt(mPrice);
         dest.writeFloat(mRating);
+        dest.writeString(mUserEmail);
     }
 
     public static final Parcelable.Creator<SelectedPlace> CREATOR = new Parcelable.Creator<SelectedPlace>() {
@@ -116,6 +120,10 @@ public class SelectedPlace implements Parcelable {
 
     public float getRating() {
         return mRating;
+    }
+
+    public String getUserEmail() {
+        return mUserEmail;
     }
 
 }

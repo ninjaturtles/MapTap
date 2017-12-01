@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.Fragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import java.util.List;
 import ca.wlu.johnny.akanksha.maptap.database.UserBaseHelper;
 import ca.wlu.johnny.akanksha.maptap.database.UserCursorWrapper;
 import ca.wlu.johnny.akanksha.maptap.database.UserDbSchema.UserTable;
+import ca.wlu.johnny.akanksha.maptap.database.UserDbSchema.FavPlacesTable;
+
 /**
  * Created by johnny on 2017-11-21.
  */
@@ -42,8 +45,28 @@ public class DbUtils {
         mDatabase.insert(UserTable.NAME, null, userValues);
     }
 
+    public void addPlace(SelectedPlace selectedPlcae) {
+        ContentValues placeValues = getplaceValues(selectedPlcae);
+        mDatabase.insert(FavPlacesTable.NAME, null, placeValues);
+    }
+
     public User getUser(String email) {
         UserCursorWrapper cursor = queryUsers(UserTable.Cols.EMAIL + " = ?", new String[]{email});
+        try {
+            if (cursor.getCount() == 0) {
+                return null;
+            }
+            cursor.moveToFirst();
+            return cursor.getUser();
+        } finally {
+            cursor.close();
+        }
+    }
+
+    public User getPlace(String id, String userEmail) {
+        UserCursorWrapper cursor = queryFavPlace(FavPlacesTable.Cols.ID +
+                        " = ? AND " + FavPlacesTable.Cols.USEREMAIL + " = ? " ,
+                new String[]{id, userEmail});
         try {
             if (cursor.getCount() == 0) {
                 return null;
@@ -66,7 +89,6 @@ public class DbUtils {
         SharedPreferences.Editor editor = MainActivity.sharedpreferences.edit();
         editor.putString(ARG_SESSION_EXISTS, newEmail);
         editor.commit();
-
     }
 
     public void updatePw(String newPw, User user){
@@ -88,6 +110,20 @@ public class DbUtils {
         return status;
     }
 
+    public int deletePlace(String id, String userEmail) {
+        int status = -1;
+
+        try {
+            status = mDatabase.delete(FavPlacesTable.NAME, FavPlacesTable.Cols.ID +
+                            " = ? AND " + FavPlacesTable.Cols.USEREMAIL + " = ? ",
+                    new String[] {id, userEmail});
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
+
     public List<User> getUsers() {
         List<User> cards = new ArrayList<>();
         UserCursorWrapper cursor = queryUsers(null, null);
@@ -103,8 +139,29 @@ public class DbUtils {
         return cards;
     }
 
+    public List<SelectedPlace> getPlaces(String userEmail) {
+        List<SelectedPlace> places = new ArrayList<>();
+        UserCursorWrapper cursor = queryFavPlace(FavPlacesTable.Cols.USEREMAIL +
+                        " = ?" , new String[]{userEmail});
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                places.add(cursor.getPlace());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+        return places;
+    }
+
     private UserCursorWrapper queryUsers(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(UserTable.NAME, null, whereClause, whereArgs, null, null, null);
+        return new UserCursorWrapper(cursor);
+    }
+
+    private UserCursorWrapper queryFavPlace(String whereClause, String[] whereArgs) {
+        Cursor cursor = mDatabase.query(FavPlacesTable.NAME, null, whereClause, whereArgs, null, null, null);
         return new UserCursorWrapper(cursor);
     }
 
@@ -119,6 +176,22 @@ public class DbUtils {
         values.put(UserTable.Cols.NAME, user.getName());
         values.put(UserTable.Cols.EMAIL, user.getEmail());
         values.put(UserTable.Cols.PASSWORD, user.getPassword());
+        return values;
+    }
+
+    private static ContentValues getplaceValues(SelectedPlace place) {
+        ContentValues values = new ContentValues();
+        values.put(FavPlacesTable.Cols.ID, place.getId());
+        values.put(FavPlacesTable.Cols.NAME, place.getName());
+        values.put(FavPlacesTable.Cols.ADDRESS, place.getAddress());
+        values.put(FavPlacesTable.Cols.PHONENUM, place.getPhoneNumber());
+        values.put(FavPlacesTable.Cols.URL, place.getUrl());
+        values.put(FavPlacesTable.Cols.LATLNG, place.getLatLng());
+        values.put(FavPlacesTable.Cols.TYPE, place.getType());
+        values.put(FavPlacesTable.Cols.PRICE, Integer.toString(place.getPrice()));
+        values.put(FavPlacesTable.Cols.RATING, String.valueOf(place.getRating()));
+        values.put(FavPlacesTable.Cols.USEREMAIL, String.valueOf(place.getUserEmail()));
+
         return values;
     }
 

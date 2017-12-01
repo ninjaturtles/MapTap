@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import ca.wlu.johnny.akanksha.maptap.User;
 import ca.wlu.johnny.akanksha.maptap.database.UserDbSchema.UserTable;
+import ca.wlu.johnny.akanksha.maptap.database.UserDbSchema.FavPlacesTable;
 
 /**
  * Created by johnny on 2017-11-21.
@@ -40,6 +41,27 @@ public class UserBaseHelper extends SQLiteOpenHelper {
         user = new User("Akanksha Malik", "akanksha@wlu.ca", "am123456");
         userValues = getUserValues(user);
         db.insert(UserTable.NAME, null, userValues);
+
+        user = new User("Chinh Hoang", "hoang@wlu.ca", "ch123456");
+        userValues = getUserValues(user);
+        db.insert(UserTable.NAME, null, userValues);
+
+
+        db.execSQL("create table " + FavPlacesTable.NAME + "(" +
+                " _id integer primary key autoincrement, " +
+                FavPlacesTable.Cols.ID + ", " +
+                FavPlacesTable.Cols.NAME + ", " +
+                FavPlacesTable.Cols.ADDRESS + ", " +
+                FavPlacesTable.Cols.PHONENUM + ", " +
+                FavPlacesTable.Cols.URL + ", " +
+                FavPlacesTable.Cols.LATLNG + ", " +
+                FavPlacesTable.Cols.TYPE + ", " +
+                FavPlacesTable.Cols.PRICE + ", " +
+                FavPlacesTable.Cols.RATING + ", " +
+                FavPlacesTable.Cols.USEREMAIL + ", " +
+                " FOREIGN KEY ("+FavPlacesTable.Cols.USEREMAIL+") REFERENCES " +
+                UserTable.NAME+"("+UserTable.Cols.EMAIL+")" +
+                " )");
     }
 
     @Override
