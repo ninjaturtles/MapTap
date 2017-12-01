@@ -35,6 +35,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView mUserNameTextView;
     private TextView mUserEmailTextView;
     private ImageButton mSaveImageButton;
+    private TextView mUserPasswordTextView;
 
     public static Intent newIntent(Context packageContext, String userEmail) {
         Intent intent = new Intent(packageContext, UserProfileActivity.class);
@@ -61,7 +62,9 @@ public class UserProfileActivity extends AppCompatActivity {
         setViews();
         setUserName();
         changeEmail();
+        changePw();
         saveButton();
+
 
     } // onCreate
 
@@ -69,6 +72,7 @@ public class UserProfileActivity extends AppCompatActivity {
         mUserNameTextView = findViewById(R.id.user_profile_name);
         mSaveImageButton = findViewById(R.id.save_button);
         mUserEmailTextView = findViewById(R.id.user_email);
+        mUserPasswordTextView = findViewById(R.id.user_pw);
     }
 
     private void setUserName(){
@@ -89,15 +93,31 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String newEmail = mUserEmailTextView.getText().toString();
-                if (newEmail.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
-                    mUserEmailTextView.setError("enter a valid email address");
+                String newPw = mUserPasswordTextView.getText().toString();
+
+                System.out.println("---------------------NEW PW: "+newPw);
+
+                if ((newEmail.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches())){
+                        mUserEmailTextView.setError("enter a valid email address");
+                }else if(((newPw.isEmpty() || newPw.length() < 4 || newPw.length() > 10))) {
+                        mUserPasswordTextView.setError("between 4 and 10 alphanumeric characters");
+
                 } else {
+                    mDbUtils.updatePw(newPw,mUser);
                     mDbUtils.updateEmail(newEmail,mUser);
                     onSaveSuccess();
                 }
             }
         });
     }
+
+    private void changePw(){
+        mUserPasswordTextView.setCursorVisible(true);
+        mUserPasswordTextView.setFocusableInTouchMode(true);
+        mUserPasswordTextView.requestFocus(); //to trigger the soft input
+
+    }
+
     @Override
     public void onBackPressed() {
         Intent resultIntent = new Intent();
@@ -147,7 +167,7 @@ public class UserProfileActivity extends AppCompatActivity {
     } // onOptionsItemSelected
 
     private void logOut() {
-        Toast.makeText(this, "See you soon, " + mUser.getName() + "!", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "See you soon, " + mUser.getName() + "!", Toast.LENGTH_SHORT).show();
         mUser = null;
 
         disconnectFromFacebook();

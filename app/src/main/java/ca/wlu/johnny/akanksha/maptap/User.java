@@ -112,4 +112,8 @@ public class User implements Parcelable {
     public void setEmail(String newEmail) {
         this.mEmail = newEmail;
     }
+
+    public void setPassword(String newPassword){
+        this.mPassword = newPassword;
+    }
 }// User

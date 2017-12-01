@@ -69,6 +69,14 @@ public class DbUtils {
 
     }
 
+    public void updatePw(String newPw, User user){
+
+        mDatabase.execSQL("UPDATE "+ UserTable.NAME + " SET " + UserTable.Cols.PASSWORD + "='"+newPw +
+                "' WHERE password='"+user.getPassword()+"'");
+
+        user.setPassword(newPw);
+    }
+
     public int deleteUser(String email) {
         int status = -1;
 
@@ -108,4 +116,5 @@ public class DbUtils {
         values.put(UserTable.Cols.PASSWORD, user.getPassword());
         return values;
     }
+
 }//DbUtils

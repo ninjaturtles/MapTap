@@ -224,7 +224,7 @@ public class SignInActivity extends AppCompatActivity {
     public void onSignInSuccess() {
         Log.d(TAG, "--------signed in successfully-------");
 
-        Toast.makeText(getBaseContext(), "Signed in successfully", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signed in successfully", Toast.LENGTH_SHORT).show();
 
         loginButton.setEnabled(true);
 
@@ -243,14 +243,14 @@ public class SignInActivity extends AppCompatActivity {
 
     public void onValidateFailed() {
         Log.d(TAG, "--------failed validation-------");
-        Toast.makeText(getBaseContext(), "Sign in failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Sign in failed", Toast.LENGTH_SHORT).show();
         loginButton.setEnabled(true);
     }
 
     private void onAuthenticateFailed() {
         Log.d(TAG, "--------failed authentication-------");
 
-        Toast.makeText(getBaseContext(), "Incorrect email or password", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Incorrect email or password", Toast.LENGTH_SHORT).show();
 
         loginButton.setEnabled(true);
     }
