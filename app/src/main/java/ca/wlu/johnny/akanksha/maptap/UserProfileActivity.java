@@ -194,6 +194,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void saveButton(){
+
         mSaveImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -215,7 +216,10 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void changePw(){
+
         mUserPasswordTextView.setCursorVisible(true);
+        mUserPasswordTextView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        mUserPasswordTextView.setText(mUser.getPassword());
         mUserPasswordTextView.setFocusableInTouchMode(true);
         mUserPasswordTextView.requestFocus(); //to trigger the soft input
     }
