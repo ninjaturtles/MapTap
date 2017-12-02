@@ -107,7 +107,7 @@ public class SelectedPlace implements Parcelable {
 
     @Override
     public String toString() {
-        return "name: " + mName + ", " + "Number: " + mPhoneNumber;
+        return "name: " + mName + ", " + "Number: " + mPhoneNumber +  "user: " + mUserEmail;
     }
 
     public String getType() {

@@ -8,11 +8,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,6 +49,7 @@ public class MainActivity extends AppCompatActivity
     // Constants
     private static final String FRAGMENT_PLACE_DETAILS = "ca.wlu.johnny.akanksha.maptap.PlaceDetailsFragment";
     private static final String ARG_USER  = "ca.wlu.johnny.akanksha.maptap.User";
+    private static final String ARG_WIDGETS_VISIBILITY  = "ca.wlu.johnny.akanksha.maptap.widgetsVisibility";
     private static final String ARG_SHARED_PREFERENCE = "ca.wlu.johnny.akanksha.maptap.sharedPerefernce";
     private static final String ARG_SESSION_EXISTS = "ca.wlu.johnny.akanksha.maptap.sessionExists";
 
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity
     private DbUtils mDbUtils;
     private Button mLaunchPlacePickerButton;
     private TextView mFavPlacesLabel;
+    private TextView mEmptyView;
     private RecyclerView mFavPlacesRecyclerView;
     private FavouritePlacesAdapter mFavPlacesAdapter;
 
@@ -77,15 +77,15 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportActionBar().setTitle("Map Tap");
+
         //Listen for changes in the back stack
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (NavUtils.getParentActivityName(this) != null) {
-                // Handle when activity is recreated like on orientation Change
-                shouldDisplayHomeUp();
-            }
-        }
+        shouldDisplayHomeUp();
+
+        // setup main activity widgets
+        setupMainActivityWidgets();
 
         // setup database connection
         mDbUtils = DbUtils.get(this);
@@ -112,49 +112,65 @@ public class MainActivity extends AppCompatActivity
         // setup location manager
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        // fetch user location if user is not null
+        // fetch user location and favourite places if user is not null
         if (mUser != null) {
             getLocation();
+            displayActivityWidgets();
+            updateFavPlacesDataSet();
         }
 
         // setup uber request a ride api
         configureUberSDK();
 
-        setupMainAvtivityWedgits();
-
-        // fetch user location if user is not null
-        if (mUser != null) {
-            List<SelectedPlace> places = mDbUtils.getPlaces(mUser.getEmail());
-
-            if (mFavPlacesAdapter == null) {
-                mFavPlacesAdapter = new FavouritePlacesAdapter(places);
-                mFavPlacesRecyclerView.setAdapter(mFavPlacesAdapter);
-
-            } else {
-
-                mFavPlacesAdapter.setPlaces(places);
-                mFavPlacesAdapter.notifyDataSetChanged();
-            }
-        }
-
     } // onCreate
 
-    private void displayAvtivityWedgits () {
-        mLaunchPlacePickerButton.setVisibility(View.VISIBLE);
-        mFavPlacesRecyclerView.setAlpha(1);
-        mFavPlacesLabel.setVisibility(View.VISIBLE);
+    private void updateFavPlacesDataSet() {
+        List<SelectedPlace> places = mDbUtils.getPlaces(mUser.getEmail());
+
+        // update favorite places data set
+        if (mFavPlacesAdapter == null) {
+            mFavPlacesAdapter = new FavouritePlacesAdapter(places);
+            mFavPlacesRecyclerView.setAdapter(mFavPlacesAdapter);
+
+        } else {
+
+            mFavPlacesAdapter.setPlaces(places);
+            mFavPlacesAdapter.notifyDataSetChanged();
+        }
     }
 
-    private void undisplayAvtivityWedgits() {
+    private void updateRecyclerViewVisibility() {
+        List<SelectedPlace> places = mDbUtils.getPlaces(mUser.getEmail());
 
-        mFavPlacesRecyclerView.setAlpha(0);
+        // set recycler view visibility
+        if (places.isEmpty()) {
+            mFavPlacesRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+
+        else {
+            mFavPlacesRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        }
+    }
+
+    private void displayActivityWidgets () {
+        mLaunchPlacePickerButton.setVisibility(View.VISIBLE);
+        mFavPlacesLabel.setVisibility(View.VISIBLE);
+        updateRecyclerViewVisibility();
+
+    }
+
+    private void undisplayActivityWidgets() {
         mLaunchPlacePickerButton.setVisibility(View.GONE);
         mFavPlacesLabel.setVisibility(View.GONE);
+        mEmptyView.setVisibility(View.GONE);
+        mFavPlacesRecyclerView.setVisibility(View.GONE);
 
     }
 
-    private void setupMainAvtivityWedgits() {
-
+    private void setupMainActivityWidgets() {
+        mEmptyView = findViewById(R.id.empty_view);
         mFavPlacesRecyclerView = findViewById(R.id.fav_place_recycler_view);
         mFavPlacesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mFavPlacesLabel = findViewById(R.id.fav_place_label);
@@ -166,8 +182,15 @@ public class MainActivity extends AppCompatActivity
                 startPlacePickerAPI();
             }
         });
+    }
 
-        mLaunchPlacePickerButton.setVisibility(View.VISIBLE);
+    private boolean isMainActivityWidgetsVisible() {
+
+        if (mLaunchPlacePickerButton.getVisibility() == View.VISIBLE
+                && mFavPlacesLabel.getVisibility() == View.VISIBLE)  {
+            return true;
+        }
+        return false;
     }
 
     private void startPlacePickerAPI() {
@@ -201,12 +224,20 @@ public class MainActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle savedStateInstance) {
         super.onSaveInstanceState(savedStateInstance);
         savedStateInstance.putParcelable(ARG_USER, mUser);
+        Boolean isVisible = isMainActivityWidgetsVisible();
+        savedStateInstance.putBoolean(ARG_WIDGETS_VISIBILITY, isVisible);
     } // onSaveInstanceState
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mUser = savedInstanceState.getParcelable(ARG_USER);
+        Boolean isVisible = savedInstanceState.getBoolean(ARG_WIDGETS_VISIBILITY);
+        if (isVisible) {
+            displayActivityWidgets();
+        } else {
+            undisplayActivityWidgets();
+        }
     } // onRestoreInstanceState
 
     @Override
@@ -235,6 +266,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        getSupportActionBar().setTitle("Map Tap");
+
         int theBackStackCount =
                 getSupportFragmentManager().getBackStackEntryCount();
 
@@ -249,8 +282,6 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        displayAvtivityWedgits();
-
         if (requestCode == SIGN_IN_REQUEST) {
 
             String email = data.getStringExtra("email");
@@ -264,7 +295,10 @@ public class MainActivity extends AppCompatActivity
             String email = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
             mUser = mDbUtils.getUser(email);
 
+            displayActivityWidgets();
+
             if (resultCode == RESULT_OK) {
+
                 Place place = PlacePicker.getPlace(this, data);
 
                 if(place.getName().equals("") && place.getAddress().equals("")) {
@@ -285,7 +319,8 @@ public class MainActivity extends AppCompatActivity
                             .addToBackStack(FRAGMENT_PLACE_DETAILS)
                             .commitAllowingStateLoss();
 
-                    undisplayAvtivityWedgits();
+                    undisplayActivityWidgets();
+
                 }
             }
         }
@@ -301,6 +336,8 @@ public class MainActivity extends AppCompatActivity
                 mUser = mDbUtils.getUser(email);
             }
         }
+
+        updateFavPlacesDataSet();
     } // onActivityResult
 
     private void processPlaceAttributes(Place place) {
@@ -503,7 +540,7 @@ public class MainActivity extends AppCompatActivity
                         .addToBackStack(FRAGMENT_PLACE_DETAILS)
                         .commitAllowingStateLoss();
 
-                undisplayAvtivityWedgits();
+                undisplayActivityWidgets();
             }
         }
     }

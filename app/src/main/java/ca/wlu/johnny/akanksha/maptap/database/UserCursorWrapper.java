@@ -44,7 +44,6 @@ public class UserCursorWrapper extends CursorWrapper {
         String myRating = getString(getColumnIndex(FavPlacesTable.Cols.RATING));
         String myUserEmail = getString(getColumnIndex(FavPlacesTable.Cols.USEREMAIL));
 
-
         SelectedPlace selectedPlace = new SelectedPlace(myId, myName, myAddress, myPhoneNum,
                 myUrl, myLatlng, myType, Integer.parseInt(myPrice),
                 Float.parseFloat(myRating), myUserEmail);

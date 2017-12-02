@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.app.Fragment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class DbUtils {
         }
     }
 
-    public User getPlace(String id, String userEmail) {
+    public SelectedPlace getPlace(String id, String userEmail) {
         UserCursorWrapper cursor = queryFavPlace(FavPlacesTable.Cols.ID +
                         " = ? AND " + FavPlacesTable.Cols.USEREMAIL + " = ? " ,
                 new String[]{id, userEmail});
@@ -72,7 +71,7 @@ public class DbUtils {
                 return null;
             }
             cursor.moveToFirst();
-            return cursor.getUser();
+            return cursor.getPlace();
         } finally {
             cursor.close();
         }

@@ -77,6 +77,7 @@ public class PlaceDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         mDbUtils = DbUtils.get(getContext());
 
@@ -92,7 +93,6 @@ public class PlaceDetailsFragment extends Fragment {
             mUser = getArguments().getParcelable(ARG_USER);
         }
 
-        setHasOptionsMenu(true);
         getActionBar().setTitle("Place Details");
 
     } // onCreate
