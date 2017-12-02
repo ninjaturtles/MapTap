@@ -2,6 +2,7 @@ package ca.wlu.johnny.akanksha.maptap;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -13,10 +14,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -97,6 +100,8 @@ public class MainActivity extends AppCompatActivity
         // setup main activity widgets
         setupMainActivityWidgets();
 
+        setupSwipeToDelete();
+
         // setup database connection
         mDbUtils = DbUtils.get(this);
 
@@ -133,6 +138,47 @@ public class MainActivity extends AppCompatActivity
         configureUberSDK();
 
     } // onCreate
+
+    private void setupSwipeToDelete() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
+                final int position = viewHolder.getAdapterPosition(); //get position which is swipe
+                if (direction == ItemTouchHelper.LEFT) { //if swipe left
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this); //alert for confirm to delete
+                    builder.setMessage("Are you sure to delete?"); //set message
+                    builder.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() { //when click on DELETE
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFavPlacesAdapter.notifyItemRemoved(position); //item removed from recylcerview
+                            mDbUtils.deletePlace(mFavPlacesAdapter.mPlaces.get(position).getId(),
+                                    mFavPlacesAdapter.mPlaces.get(position).getUserEmail());
+                            mFavPlacesAdapter.mPlaces.remove(position); //then remove item
+                            updateFavPlacesDataSet();
+                            return;
+                        }
+
+                    }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() { //not removing items if cancel is done
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mFavPlacesAdapter.notifyItemRemoved(position + 1); //notifies the RecyclerView Adapter that data in adapter has been removed at a particular position.
+                            mFavPlacesAdapter.notifyItemRangeChanged(position, mFavPlacesAdapter.getItemCount()); //notifies the RecyclerView Adapter that positions of element in adapter has been changed from position(removed element index to end of list), please update it.
+                            return;
+                        }
+                    }).show(); //show alert dialog
+                }
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mFavPlacesRecyclerView); //set swipe to recylcerview
+    }
 
     private void updateFavPlacesDataSet() {
         List<SelectedPlace> places = mDbUtils.getPlaces(mUser.getEmail());
