@@ -364,6 +364,7 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 processPlaceAttributes(place);
+                getUserLocation();
 
                 FragmentManager fm = getSupportFragmentManager();
                 Fragment fragment = fm.findFragmentById(R.id.fragment_container);
@@ -605,6 +606,7 @@ public class MainActivity extends AppCompatActivity
         public void onClick(View view){
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+            getUserLocation();
 
             if (fragment == null) {
 

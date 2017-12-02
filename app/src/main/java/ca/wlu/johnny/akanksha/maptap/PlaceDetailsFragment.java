@@ -174,6 +174,7 @@ public class PlaceDetailsFragment extends Fragment {
         mUberRidesButton = v.findViewById(R.id.uber_icon);
 
 
+
         RideParameters rideParams = new RideParameters.Builder()
                 .setPickupLocation(mUser.getLat(), mUser.getLng(), mUser.getName(), "---" )
                 .setDropoffLocation(parsePlaceLat(), parsePlaceLng(), mPlace.getName(), mPlace.getAddress())
