@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
 
         // fetch user location and favourite places if user is not null
         if (mUser != null) {
-            getLocation();
+            getUserLocation();
             displayActivityWidgets();
             updateFavPlacesDataSet();
         }
@@ -342,7 +342,7 @@ public class MainActivity extends AppCompatActivity
 
             String email = data.getStringExtra("email");
             mUser = mDbUtils.getUser(email);
-            getLocation();
+            getUserLocation();
             startPlacePickerAPI();
         }
 
@@ -385,7 +385,7 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 String email = data.getStringExtra("email");
                 mUser = mDbUtils.getUser(email);
-                getLocation();
+                getUserLocation();
                 startPlacePickerAPI();
             }else{
                 String email = sharedpreferences.getString(ARG_SESSION_EXISTS, null);
@@ -461,7 +461,7 @@ public class MainActivity extends AppCompatActivity
         UberSdk.initialize(config);
     }
 
-    private void getLocation() {
+    private void getUserLocation() {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -486,7 +486,7 @@ public class MainActivity extends AppCompatActivity
 
         switch (requestCode) {
             case REQUEST_LOCATION:
-                getLocation();
+                getUserLocation();
                 break;
         }
     }

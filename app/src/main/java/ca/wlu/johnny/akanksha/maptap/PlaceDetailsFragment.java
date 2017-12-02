@@ -1,16 +1,21 @@
 package ca.wlu.johnny.akanksha.maptap;
 
+/**
+ * Created by johnny on 2017-11-22.
+ */
+
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -38,10 +43,6 @@ import com.uber.sdk.rides.client.error.ApiError;
 
 import com.google.android.gms.location.places.GeoDataClient;
 
-/**
- * Created by johnny on 2017-11-22.
- */
-
 public class PlaceDetailsFragment extends Fragment {
 
     private static final String ARG_PLACE  = "ca.wlu.johnny.akanksha.maptap.Place";
@@ -61,7 +62,8 @@ public class PlaceDetailsFragment extends Fragment {
     private RatingBar mRating;
     private RideRequestButton mUberRidesButton;
     private GeoDataClient mGeoDataClient;
-    private Button mAddToFavoriteButton;
+    private ImageButton mAddToFavoriteButton;
+    private Boolean isEnable = false;
 
     public static PlaceDetailsFragment newInstance(SelectedPlace place, User user){
         Bundle args = new Bundle();
@@ -124,26 +126,53 @@ public class PlaceDetailsFragment extends Fragment {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     } // ActionBar
 
-
     private void onAddToFavoriteClick() {
+        SelectedPlace selectedPlace = mDbUtils.getPlace(mPlace.getId(), mUser.getEmail());
+        if (selectedPlace != null) {
+            mAddToFavoriteButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), android.R.drawable.btn_star_big_on));
+            isEnable = true;
+        } else {
+            mAddToFavoriteButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), android.R.drawable.btn_star_big_off));
+            isEnable = false;
+        }
+
         mAddToFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDbUtils.addPlace(mPlace);
-                onAddedToFavorite();
+                if (isEnable) {
+                    mAddToFavoriteButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), android.R.drawable.btn_star_big_off));
+                    mDbUtils.deletePlace(mPlace.getId(),mUser.getEmail());
+                    onDeletedFromFavourite();
+                    isEnable = !isEnable;
+
+                }else{
+                    mAddToFavoriteButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), android.R.drawable.btn_star_big_on));
+                    SelectedPlace selectedPlace = mDbUtils.getPlace(mPlace.getId(), mUser.getEmail());
+                    if (selectedPlace == null) {
+                        mDbUtils.addPlace(mPlace);
+                        onAddedToFavorite();
+                        mAddToFavoriteButton.setImageDrawable(ContextCompat.getDrawable(getActivity(), android.R.drawable.btn_star_big_on));
+                        isEnable = !isEnable;
+
+                    }
+                }
             }
         });
-    }
+    } // onAddToFavoriteClick
 
     private void onAddedToFavorite() {
-        Toast.makeText(getActivity(),"Added to Favorite",Toast.LENGTH_SHORT).show();
-    }
+        Toast.makeText(getActivity(),"Added to Favourite",Toast.LENGTH_SHORT).show();
+    } // onAddedToFavorite
+
+    private void onDeletedFromFavourite() {
+        Toast.makeText(getActivity(),"Deleted from Favourite",Toast.LENGTH_SHORT).show();
+    } // onDeletedFromFavourite
 
     private void onUberClick(View v) {
-
         //Uber button
         mUberRidesButton = new RideRequestButton(getContext());
         mUberRidesButton = v.findViewById(R.id.uber_icon);
+
 
         RideParameters rideParams = new RideParameters.Builder()
                 .setPickupLocation(mUser.getLat(), mUser.getLng(), mUser.getName(), "---" )
