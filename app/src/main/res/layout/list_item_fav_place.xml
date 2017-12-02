@@ -3,16 +3,53 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="5dp"
     android:weightSum="1">
 
+    <ImageView
+        android:id="@+id/fav_place_photo"
+        android:layout_width="75dp"
+        android:layout_height="75dp" />
 
-    <TextView
-        android:id="@+id/fav_place_address"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:freezesText="true"
-        android:textSize="16dp" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/fav_place_name"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:freezesText="true"
+            android:text="Starbucks"
+            android:textStyle="bold"
+            android:textSize="18dp"
+            android:paddingLeft="3dp"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/fav_place_type"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:text="Coffee shop"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:freezesText="true"
+            android:textSize="15dp"
+            android:paddingLeft="3dp"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/fav_place_address"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:text="75 University Avenue, Waterloo"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:freezesText="true"
+            android:paddingLeft="3dp"
+            android:textSize="12dp" />
+
+    </LinearLayout>
 
 
 </LinearLayout>

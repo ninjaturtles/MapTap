@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,13 +34,21 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
+import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResponse;
+import com.google.android.gms.location.places.PlacePhotoResponse;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.uber.sdk.android.core.UberSdk;
 import com.uber.sdk.core.auth.Scope;
 import com.uber.sdk.rides.client.SessionConfiguration;
@@ -495,37 +505,54 @@ public class MainActivity extends AppCompatActivity
     private class FavouritePlacesHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener{
 
-        private ImageView mImageView;
+        private ImageView mFavPlaceImageView;
+        private TextView mFavPlaceNameTextView;
+        private TextView mFavPlaceTypeTextView;
         private TextView mFavPlaceAddressTextView;
         private SelectedPlace mPlace;
         private Resources res;
+        private GeoDataClient mGeoDataClient;
+
 
         public FavouritePlacesHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_fav_place, parent, false));
             itemView.setOnClickListener(this);
 
-//            res = getResources();
-//
+            mGeoDataClient = Places.getGeoDataClient(MainActivity.this, null);
+            res = getResources();
+
+            mFavPlaceImageView = itemView.findViewById(R.id.fav_place_photo);
+            mFavPlaceNameTextView = itemView.findViewById(R.id.fav_place_name);
+            mFavPlaceTypeTextView = itemView.findViewById(R.id.fav_place_type);
             mFavPlaceAddressTextView = itemView.findViewById(R.id.fav_place_address);
-//            mImageView = itemView.findViewById(R.id.image_view);
         }
 
         public void bind(SelectedPlace selectedPlace){
             mPlace = selectedPlace;
 
             updateImage();
-            updateQuestion();
+            updateName();
+            updateType();
+            updateAddress();
         }
 
         private void updateImage() {
-//            String imageName = mPlace.getImage();
-//            int resourceId = res.getIdentifier(imageName, "drawable", MainActivity.this.getPackageName());
-//            mImageView.setImageResource(resourceId);
+            getPhotos(mPlace.getId());
         }
 
-        private void updateQuestion() {
+        private void updateName() {
+            String name = mPlace.getName();
+            mFavPlaceNameTextView.setText(name);
+        }
+
+        private void updateAddress() {
             String address = mPlace.getAddress();
             mFavPlaceAddressTextView.setText(address);
+        }
+
+        private void updateType() {
+            String type = mPlace.getType();
+            mFavPlaceTypeTextView.setText(type);
         }
 
         @Override
@@ -542,6 +569,44 @@ public class MainActivity extends AppCompatActivity
 
                 undisplayActivityWidgets();
             }
+        }
+
+        // Request photos and metadata for the specified place.
+        private void getPhotos(String placeId) {
+
+            final Task<PlacePhotoMetadataResponse> photoMetadataResponse = mGeoDataClient.getPlacePhotos(placeId);
+            photoMetadataResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoMetadataResponse>() {
+
+                @Override
+                public void onComplete(@NonNull Task<PlacePhotoMetadataResponse> task) {
+                    // Get the list of photos.
+                    PlacePhotoMetadataResponse photos = task.getResult();
+                    // Get the PlacePhotoMetadataBuffer (metadata for all of the photos).
+                    PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                    // Get the first photo in the list.
+                    if (photoMetadataBuffer.getCount() == 0) {
+                        int resourceId = res.getIdentifier("nophoto", "drawable", MainActivity.this.getPackageName());
+                        mFavPlaceImageView.setImageResource(resourceId);
+                        return;
+                    }
+
+                    PlacePhotoMetadata photoMetadata = photoMetadataBuffer.get(0);
+                    // Get the attribution text.
+                    CharSequence attribution = photoMetadata.getAttributions();
+                    // Get a full-size bitmap for the photo.
+                    Task<PlacePhotoResponse> photoResponse = mGeoDataClient.getPhoto(photoMetadata);
+                    photoResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoResponse>() {
+
+                        @Override
+                        public void onComplete(@NonNull Task<PlacePhotoResponse> task) {
+                            PlacePhotoResponse photo = task.getResult();
+                            Bitmap bitmap = photo.getBitmap();
+                            Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 75, 75, false);
+                            mFavPlaceImageView.setImageBitmap(scaledBitmap);
+                        }
+                    });
+                }
+            });
         }
     }
 } // MainActivity
