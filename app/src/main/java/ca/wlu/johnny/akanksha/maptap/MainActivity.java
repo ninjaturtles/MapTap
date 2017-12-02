@@ -39,6 +39,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBufferResponse;
 import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResponse;
@@ -84,6 +85,9 @@ public class MainActivity extends AppCompatActivity
     private TextView mEmptyView;
     private RecyclerView mFavPlacesRecyclerView;
     private FavouritePlacesAdapter mFavPlacesAdapter;
+    private GeoDataClient mGeoDataClient;
+    private Place place2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -363,22 +367,36 @@ public class MainActivity extends AppCompatActivity
                     return;
                 }
 
-                processPlaceAttributes(place);
-                getUserLocation();
+                mGeoDataClient = Places.getGeoDataClient(this, null);
+                Task<PlaceBufferResponse> task = mGeoDataClient.getPlaceById(place.getId());
 
-                FragmentManager fm = getSupportFragmentManager();
-                Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+                task.addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                        if (task.isSuccessful()) {
+                            PlaceBufferResponse places = task.getResult();
+                            place2 = places.get(0);
+                            processPlaceAttributes(place2);
+                            getUserLocation();
 
-                if (fragment == null) {
+                            FragmentManager fm = getSupportFragmentManager();
+                            Fragment fragment = fm.findFragmentById(R.id.fragment_container);
 
-                    fragment = PlaceDetailsFragment.newInstance(mSelectedPlace, mUser);
-                    fm.beginTransaction().add(R.id.fragment_container, fragment)
-                            .addToBackStack(FRAGMENT_PLACE_DETAILS)
-                            .commitAllowingStateLoss();
+                            if (fragment == null) {
 
-                    undisplayActivityWidgets();
+                                fragment = PlaceDetailsFragment.newInstance(mSelectedPlace, mUser);
+                                fm.beginTransaction().add(R.id.fragment_container, fragment)
+                                        .addToBackStack(FRAGMENT_PLACE_DETAILS)
+                                        .commitAllowingStateLoss();
 
-                }
+                                undisplayActivityWidgets();
+
+                            }
+                            places.release();
+                        } else {
+                        }
+                    }
+                });
             }
         }
 
@@ -511,7 +529,6 @@ public class MainActivity extends AppCompatActivity
 
 
     private void disconnectFromFacebook() {
-
         if (AccessToken.getCurrentAccessToken() == null) {
             return; // already logged out
         }

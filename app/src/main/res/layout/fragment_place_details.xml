@@ -1,11 +1,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -76,7 +77,6 @@
                 android:padding="10dp"
                 android:src="@drawable/ic_action_web"/>
 
-
             <ImageView
                 android:id="@+id/directions_icon"
                 android:layout_width="0dp"
@@ -115,7 +115,6 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             uber:ub__style="black"/>
-
 
     </RelativeLayout>
 

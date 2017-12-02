@@ -173,8 +173,6 @@ public class PlaceDetailsFragment extends Fragment {
         mUberRidesButton = new RideRequestButton(getContext());
         mUberRidesButton = v.findViewById(R.id.uber_icon);
 
-
-
         RideParameters rideParams = new RideParameters.Builder()
                 .setPickupLocation(mUser.getLat(), mUser.getLng(), mUser.getName(), "---" )
                 .setDropoffLocation(parsePlaceLat(), parsePlaceLng(), mPlace.getName(), mPlace.getAddress())
@@ -281,10 +279,12 @@ public class PlaceDetailsFragment extends Fragment {
 
         if (price == 0 || price == 1) {
             mPlacePriceTextView.setText("$");
-        } else if (price == 2 || price == 3) {
+        } else if (price == 2) {
             mPlacePriceTextView.setText("$$");
-        } else if (price == 4) {
+        } else if (price == 3) {
             mPlacePriceTextView.setText("$$$");
+        } else if (price == 4) {
+            mPlacePriceTextView.setText("$$$$");
         } else {
             mPlacePriceTextView.setText("");
         }
